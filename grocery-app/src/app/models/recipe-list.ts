@@ -3,8 +3,12 @@ import { Recipe } from "./recipe";
 
 export class RecipeList {
     public recipes: Recipe[];
-    constructor(recipes: Recipe[]) {
+    public description: string;
+    public name: string;
+    constructor(recipes: Recipe[], description: string, name: string) {
         this.recipes = recipes;
+        this.description = description;
+        this.name = name;
     }
 
     public getAmountsForEachItem(): Map<string, Amount> {
@@ -20,5 +24,11 @@ export class RecipeList {
             })
         })
         return amountMap;
+    }
+
+    public importRecipeList(list: RecipeList): void {
+        list.recipes.forEach(recipe => {
+            this.recipes.push(recipe);
+        })
     }
 }
