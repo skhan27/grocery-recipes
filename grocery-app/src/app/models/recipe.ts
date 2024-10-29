@@ -1,14 +1,11 @@
-import { RecipeItem } from "./recipe-item";
+import { RecipeItem } from './recipe-item';
 
 export class Recipe {
-    public items: RecipeItem[] = [];
-    public name: string;
-    public notes: string;
-    public instructions: string[];
-    constructor(name: string, items: RecipeItem[], instructions: string[], notes: string) {
-        this.items = items;
-        this.name = name;
-        this.instructions = instructions;
-        this.notes = notes;
-    }
+  public items: RecipeItem[] = [];
+  public name: string;
+  public notes: string;
+  public instructions: string[];
+  constructor(obj: Partial<Recipe>) {
+    Object.assign(this, obj);
+  }
 }

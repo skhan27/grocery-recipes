@@ -1,1 +1,12 @@
-<p>recipe-list works!</p>
+<h1>{{ recipe$().name }}</h1>
+<h2>{{ recipe$().description }}</h2>
+@for (recipe of recipe$().recipes; track $index) {
+<h3>{{ recipe.name }}</h3>
+@for ( item of recipe.items; track $index) {
+<div>
+  <span>{{ item.name }}</span>
+  <span>{{ item.amount.amount }}</span>
+</div>
+} @for (i of recipe.instructions; track $index) {
+<span>{{ recipe.instructions }}</span>
+} }
