@@ -1,7 +1,11 @@
 export enum Unit {
-  CUPS = 'CUPS',
-  TEASPOONS = 'TEASPOONS',
-  TABLESPOONS = 'TABLESPOONS',
-  PINCH = 'PINCH',
-  ITEM = 'ITEM',
+  CUPS = 'Cups',
+  TEASPOONS = 'Teaspoons',
+  TABLESPOONS = 'Tablespoons',
+  PINCH = 'Pinch',
+  ITEM = 'Item',
+  GRAMS = 'Grams',
+  KILOGRAMS = 'Kilograms',
+  LITERS = 'Liters',
+  MILLILITERS = 'Milliliters',
 }

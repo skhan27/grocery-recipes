@@ -1,0 +1,33 @@
+<form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+  <div formArrayName="items">
+    <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+      <input formControlName="name" placeholder="Item Name" required />
+      <input
+        formControlName="amount"
+        placeholder="Amount"
+        type="number"
+        min="0"
+        required
+      />
+      <select formControlName="unit" required>
+        <option value="" disabled>Select Unit</option>
+        @for(unit of units; track $index) {
+        <option value="{{ unit }}">{{ unit }}</option>
+        }
+      </select>
+      <button type="button" (click)="removeItem(i)">Remove</button>
+    </div>
+  </div>
+  <button type="button" (click)="addItem()">Add Item</button>
+  <div>
+    <textarea
+      formControlName="instructions"
+      placeholder="Instructions"
+      required
+    ></textarea>
+  </div>
+  <div>
+    <textarea formControlName="notes" placeholder="Additional Notes"></textarea>
+  </div>
+  <button type="submit">Create Recipe</button>
+</form>
