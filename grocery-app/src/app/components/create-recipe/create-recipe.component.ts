@@ -13,18 +13,20 @@ import { RecipeService } from '../../services/recipe.service';
 import { Recipe } from '../../models/recipe';
 import { RecipeItem } from '../../models/recipe-item';
 import { Amount } from '../../models/amount';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-recipe',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule, NgFor],
   templateUrl: './create-recipe.component.html',
-  styleUrls: ['./create-recipe.component.css'],
+  styleUrls: ['./create-recipe.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreateRecipeComponent {
   recipeForm: FormGroup;
   recipeService = inject(RecipeService);
+  router = inject(Router);
   units = Object.values(Unit);
   constructor(private fb: FormBuilder) {
     this.recipeForm = this.fb.group({
@@ -73,7 +75,9 @@ export class CreateRecipeComponent {
         instructions: val.instructions,
         notes: val.notes,
       });
-      this.recipeService.createRecipe(recipe);
+      this.recipeService.createRecipe(recipe).subscribe(() => {
+        this.router.navigate(['/list']);
+      });
     }
   }
 }

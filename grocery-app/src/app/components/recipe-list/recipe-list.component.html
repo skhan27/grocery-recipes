@@ -1,7 +1,7 @@
 <ul>
   @for (recipe of recipe$(); track $index) {
   <li>
-    <h3>{{ recipe.name }}</h3>
+    <a (click)="viewRecipeDetails(recipe.id)">{{ recipe.name }}</a>
   </li>
   }
 </ul>
