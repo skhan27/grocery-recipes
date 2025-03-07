@@ -1,5 +1,5 @@
 import { NgFor } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,6 +9,10 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Unit } from '../../models/unit';
+import { RecipeService } from '../../services/recipe.service';
+import { Recipe } from '../../models/recipe';
+import { RecipeItem } from '../../models/recipe-item';
+import { Amount } from '../../models/amount';
 
 @Component({
   selector: 'app-create-recipe',
@@ -20,9 +24,11 @@ import { Unit } from '../../models/unit';
 })
 export class CreateRecipeComponent {
   recipeForm: FormGroup;
+  recipeService = inject(RecipeService);
   units = Object.values(Unit);
   constructor(private fb: FormBuilder) {
     this.recipeForm = this.fb.group({
+      name: ['', Validators.required],
       items: this.fb.array([this.createItem()]),
       instructions: ['', Validators.required],
       notes: [''],
@@ -53,9 +59,21 @@ export class CreateRecipeComponent {
 
   onSubmit(): void {
     if (this.recipeForm.valid) {
-      const recipe = this.recipeForm.value;
-      console.log('Recipe created:', recipe);
-      // Here you can handle the recipe creation logic
+      const val = this.recipeForm.value;
+      const recipe = new Recipe({
+        name: val.name,
+        items: val.items.map(
+          (item: { name: string; amount: number; unit: Unit }) => {
+            return new RecipeItem(
+              item.name,
+              new Amount(item.amount, item.unit)
+            );
+          }
+        ),
+        instructions: val.instructions,
+        notes: val.notes,
+      });
+      this.recipeService.createRecipe(recipe);
     }
   }
 }

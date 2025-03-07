@@ -1,4 +1,5 @@
 <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
+  <input formControlName="name" placeholder="Recipe Name" required />
   <div formArrayName="items">
     <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
       <input formControlName="name" placeholder="Item Name" required />
