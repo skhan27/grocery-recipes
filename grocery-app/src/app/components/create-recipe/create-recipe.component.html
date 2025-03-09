@@ -1,5 +1,37 @@
 <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
   <input formControlName="name" placeholder="Recipe Name" required />
+  Servings:
+  <input
+    formControlName="servings"
+    placeholder="Servings"
+    type="number"
+    min="1"
+  />
+  Prep time:
+  <input
+    formControlName="prepTime"
+    placeholder="Prep Time"
+    type="number"
+    min="0"
+  />
+  Cook Time:
+  <input
+    formControlName="cookTime"
+    placeholder="Cook Time"
+    type="number"
+    min="0"
+  />
+
+  Rating:
+  <input
+    formControlName="rating"
+    placeholder="Rating"
+    type="number"
+    min="0"
+    max="5"
+  />
+  Tags:
+  <input formControlName="tags" placeholder="Tags" />
   <div formArrayName="items">
     <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
       <input formControlName="name" placeholder="Item Name" required />

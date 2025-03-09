@@ -1,4 +1,3 @@
-import { Amount } from './amount';
 import { RecipeItem } from './recipe-item';
 
 export interface Recipe {
@@ -7,4 +6,9 @@ export interface Recipe {
   name: string;
   notes: string;
   instructions: string[];
+  servings: number;
+  rating: number;
+  tags: string[];
+  prepTime: number;
+  cookTime: number;
 }

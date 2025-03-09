@@ -14,6 +14,7 @@ import { Recipe } from '../../models/recipe';
 import { RecipeItem } from '../../models/recipe-item';
 import { Router } from '@angular/router';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
+import { uuidv7 } from 'uuidv7';
 
 @Component({
   selector: 'app-create-recipe',
@@ -35,6 +36,11 @@ export class CreateRecipeComponent {
       items: this.fb.array([this.createItem()]),
       instructions: ['', Validators.required],
       notes: [''],
+      servings: [1, Validators.required],
+      rating: [0],
+      tags: [''],
+      prepTime: [0],
+      cookTime: [0],
     });
   }
 
@@ -64,7 +70,7 @@ export class CreateRecipeComponent {
     if (this.recipeForm.valid) {
       const val = this.recipeForm.value;
       const recipe: Recipe = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: uuidv7(),
         name: val.name,
         items: val.items.map(
           (item: { name: string; amount: number; unit: Unit }) => {
@@ -74,8 +80,13 @@ export class CreateRecipeComponent {
             } as RecipeItem;
           }
         ),
-        instructions: val.instructions,
+        instructions: val.instructions.split('\n'),
         notes: val.notes,
+        rating: val.rating,
+        servings: val.servings,
+        tags: val.tags.split(',').map((tag: string) => tag.trim()),
+        prepTime: val.prepTime,
+        cookTime: val.cookTime,
       };
       this.recipeFirebaseService.addRecipe(recipe).subscribe(() => {
         this.router.navigate(['/list']);
