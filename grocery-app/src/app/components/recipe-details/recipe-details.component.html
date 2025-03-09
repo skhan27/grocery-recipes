@@ -1,9 +1,19 @@
 <div *ngIf="recipe$ | async as recipe">
   <h1>{{ recipe.name }}</h1>
   <h2>Ingredients</h2>
+  <div>
+    Scale this recipe:
+    <input
+      [formControl]="scaleControl"
+      type="number"
+      min="0.1"
+      step="0.1"
+      required
+    />
+  </div>
   <ul>
     <li *ngFor="let ingredient of recipe.items">
-      {{ ingredient.amount.amount }}
+      {{ ingredient.amount.amount * (scaleControl.value ?? 1) }}
       {{ ingredient.amount.unit }} {{ ingredient.name }}
     </li>
   </ul>

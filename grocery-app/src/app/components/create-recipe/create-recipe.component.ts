@@ -12,7 +12,6 @@ import { Unit } from '../../models/unit';
 import { RecipeService } from '../../services/recipe.service';
 import { Recipe } from '../../models/recipe';
 import { RecipeItem } from '../../models/recipe-item';
-import { Amount } from '../../models/amount';
 import { Router } from '@angular/router';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 

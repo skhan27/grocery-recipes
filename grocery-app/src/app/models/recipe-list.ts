@@ -16,7 +16,7 @@ export class RecipeListClass {
   }
 
   public getAmountsForEachItem(): Map<string, Amount> {
-    const amountMap: Map<string, Amount> = new Map();
+    const amountMap = new Map<string, Amount>();
     this.recipes.forEach((recipe) => {
       recipe.items.forEach((item) => {
         if (amountMap.has(item.name)) {
