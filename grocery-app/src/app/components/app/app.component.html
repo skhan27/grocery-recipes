@@ -1,9 +1,11 @@
 <div class="navigation">
-  <a routerLink="/list">Recipes</a>
-  <a routerLink="/create-recipe">Create Recipe</a>
-  <a routerLink="/meal-plan">Meal Plan</a>
+  <div *ngIf="authService.isLoggedIn">
+    <a routerLink="/list">Recipes</a>
+    <a routerLink="/create-recipe">Create Recipe</a>
+    <a routerLink="/meal-plan">Meal Plan</a>
+  </div>
+  <a routerLink="/login" *ngIf="authService.isLoggedIn">Logout</a>
 </div>
-
 <div class="app-container">
   <router-outlet></router-outlet>
 </div>
