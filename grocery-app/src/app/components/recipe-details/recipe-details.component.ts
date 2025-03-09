@@ -9,6 +9,7 @@ import { RecipeService } from '../../services/recipe.service';
 import { Observable } from 'rxjs';
 import { Recipe } from '../../models/recipe';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 
 @Component({
   selector: 'recipe-details',
@@ -21,8 +22,9 @@ import { AsyncPipe, NgFor, NgIf } from '@angular/common';
 export class RecipeDetailsComponent implements OnInit {
   @Input() recipeId: string;
   recipeService = inject(RecipeService);
+  recipeFirebaseService = inject(RecipeFirebaseService);
   recipe$: Observable<Recipe>;
   ngOnInit() {
-    this.recipe$ = this.recipeService.getRecipe(this.recipeId);
+    this.recipe$ = this.recipeFirebaseService.getRecipeById(this.recipeId);
   }
 }

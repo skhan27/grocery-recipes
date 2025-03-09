@@ -1,7 +1,13 @@
 import { Amount } from './amount';
 import { Recipe } from './recipe';
 
-export class RecipeList {
+export interface RecipeList {
+  recipes: Recipe[];
+  description: string;
+  name: string;
+}
+
+export class RecipeListClass {
   public recipes: Recipe[];
   public description: string;
   public name: string;

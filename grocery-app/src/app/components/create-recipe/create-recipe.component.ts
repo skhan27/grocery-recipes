@@ -14,6 +14,7 @@ import { Recipe } from '../../models/recipe';
 import { RecipeItem } from '../../models/recipe-item';
 import { Amount } from '../../models/amount';
 import { Router } from '@angular/router';
+import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 
 @Component({
   selector: 'app-create-recipe',
@@ -26,6 +27,7 @@ import { Router } from '@angular/router';
 export class CreateRecipeComponent {
   recipeForm: FormGroup;
   recipeService = inject(RecipeService);
+  recipeFirebaseService = inject(RecipeFirebaseService);
   router = inject(Router);
   units = Object.values(Unit);
   constructor(private fb: FormBuilder) {
@@ -62,20 +64,21 @@ export class CreateRecipeComponent {
   onSubmit(): void {
     if (this.recipeForm.valid) {
       const val = this.recipeForm.value;
-      const recipe = new Recipe({
+      const recipe: Recipe = {
+        id: Math.random().toString(36).substr(2, 9),
         name: val.name,
         items: val.items.map(
           (item: { name: string; amount: number; unit: Unit }) => {
-            return new RecipeItem(
-              item.name,
-              new Amount(item.amount, item.unit)
-            );
+            return {
+              name: item.name,
+              amount: { amount: item.amount, unit: item.unit },
+            } as RecipeItem;
           }
         ),
         instructions: val.instructions,
         notes: val.notes,
-      });
-      this.recipeService.createRecipe(recipe).subscribe(() => {
+      };
+      this.recipeFirebaseService.addRecipe(recipe).subscribe(() => {
         this.router.navigate(['/list']);
       });
     }

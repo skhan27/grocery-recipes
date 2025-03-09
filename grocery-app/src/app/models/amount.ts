@@ -1,5 +1,6 @@
-import { Unit } from "./unit";
+import { Unit } from './unit';
 
-export class Amount {
-    constructor(public amount: number, public unit: Unit) {}
+export interface Amount {
+  amount: number;
+  unit: Unit;
 }
