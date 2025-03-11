@@ -18,7 +18,7 @@ import { NgIf } from '@angular/common';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-
+  errorMessage: string;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -39,12 +39,16 @@ export class LoginComponent implements OnInit {
 
     this.authService
       .login(this.loginForm.value.email, this.loginForm.value.password)
-      .subscribe((success) => {
-        if (success) {
+      .subscribe({
+        next: () => {
+          console.log('Logged in');
+
           this.router.navigate(['/list']);
-        } else {
-          alert('Login failed');
-        }
+        },
+        error: (err) => {
+          this.errorMessage = err.code;
+          this.loginForm.reset();
+        },
       });
   }
 }

@@ -8,7 +8,8 @@
   >
     <small>Email is required and must be valid.</small>
   </div>
-
+  <label for="username">Username:</label>
+  <input id="username" formControlName="username" required />
   <label for="password">Password:</label>
   <input type="password" id="password" formControlName="password" required />
   <div
@@ -36,5 +37,8 @@
     <small>Confirm Password is required.</small>
   </div>
 
+  <div *ngIf="errorMessage">
+    <small>{{ errorMessage }}</small>
+  </div>
   <button type="submit" [disabled]="registerForm.invalid">Register</button>
 </form>

@@ -1,4 +1,7 @@
 <form [formGroup]="loginForm" (ngSubmit)="login()">
+  <div *ngIf="errorMessage">
+    <small>{{ errorMessage }}</small>
+  </div>
   <label for="email">Email:</label>
   <input type="email" id="email" formControlName="email" required />
   <div

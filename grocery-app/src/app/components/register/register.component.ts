@@ -18,7 +18,7 @@ import { NgIf } from '@angular/common';
 })
 export class RegisterComponent implements OnInit {
   registerForm: FormGroup;
-
+  errorMessage: string;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -28,6 +28,7 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
     this.registerForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
     });
@@ -47,13 +48,18 @@ export class RegisterComponent implements OnInit {
     }
 
     this.authService
-      .register(this.registerForm.value.email, this.registerForm.value.password)
-      .subscribe((success) => {
-        if (success) {
-          this.router.navigate(['/login']);
-        } else {
-          alert('Registration failed');
-        }
+      .register(
+        this.registerForm.value.email,
+        this.registerForm.value.username,
+        this.registerForm.value.password
+      )
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this.errorMessage = err.code;
+        },
       });
   }
 }

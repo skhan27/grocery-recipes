@@ -9,6 +9,8 @@ import { AuthService } from '../services/auth.service';
 
 const AuthGuard: ResolveFn<boolean> = () => {
   const authService = inject(AuthService);
+  console.log('guard', authService.isLoggedIn());
+
   if (authService.isLoggedIn()) {
     return true;
   }
