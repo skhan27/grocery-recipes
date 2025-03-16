@@ -41,8 +41,6 @@ export class LoginComponent implements OnInit {
       .login(this.loginForm.value.email, this.loginForm.value.password)
       .subscribe({
         next: () => {
-          console.log('Logged in');
-
           this.router.navigate(['/list']);
         },
         error: (err) => {

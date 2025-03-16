@@ -1,11 +1,15 @@
 <div class="navigation">
-  <div *ngIf="authService.isLoggedIn()">
+  <div *ngIf="isLoggedIn$ | async">
     <a routerLink="/list">Recipes</a>
     <a routerLink="/create-recipe">Create Recipe</a>
     <a routerLink="/meal-plan">Meal Plan</a>
   </div>
-  <a routerLink="/register" *ngIf="!authService.isLoggedIn()">Register</a>
-  <a (click)="logout()" *ngIf="authService.isLoggedIn()">Logout</a>
+  <div *ngIf="!(isLoggedIn$ | async)">
+    <a routerLink="/register">Register</a>
+    <a routerLink="/login">Login</a>
+  </div>
+
+  <a (click)="logout()" *ngIf="isLoggedIn$ | async">Logout</a>
 </div>
 <div class="app-container">
   <router-outlet></router-outlet>

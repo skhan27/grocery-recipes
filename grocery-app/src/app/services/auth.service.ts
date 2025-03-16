@@ -7,7 +7,7 @@ import {
   updateProfile,
   user,
 } from '@angular/fire/auth';
-import { from, Observable, of } from 'rxjs';
+import { from, map, Observable, of } from 'rxjs';
 import { User } from '../models/user';
 
 @Injectable({
@@ -16,7 +16,6 @@ import { User } from '../models/user';
 export class AuthService {
   private firebaseAuth = inject(Auth);
   user$ = user(this.firebaseAuth);
-  currentUser$ = signal<User | null | undefined>(undefined);
 
   login(email: string, password: string): Observable<void> {
     const req = signInWithEmailAndPassword(
@@ -44,8 +43,8 @@ export class AuthService {
     return from(req);
   }
 
-  isLoggedIn(): boolean {
-    return this.currentUser$() !== null && this.currentUser$() !== undefined;
+  isLoggedIn(): Observable<boolean> {
+    return this.user$.pipe(map((user) => user !== null && user !== undefined));
   }
 
   logout(): Observable<void> {

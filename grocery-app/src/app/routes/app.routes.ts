@@ -6,15 +6,19 @@ import { LoginComponent } from '../components/login/login.component';
 import { RegisterComponent } from '../components/register/register.component';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
+import { map } from 'rxjs';
 
 const AuthGuard: ResolveFn<boolean> = () => {
   const authService = inject(AuthService);
-  console.log('guard', authService.isLoggedIn());
-
-  if (authService.isLoggedIn()) {
-    return true;
-  }
-  return new RedirectCommand(inject(Router).parseUrl('/login'));
+  const router = inject(Router);
+  return authService.isLoggedIn().pipe(
+    map((isLoggedIn) => {
+      if (isLoggedIn) {
+        return true;
+      }
+      return new RedirectCommand(router.parseUrl('/login'));
+    })
+  );
 };
 
 export const routes: Routes = [
@@ -52,6 +56,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'list',
+    redirectTo: '',
   },
 ];
