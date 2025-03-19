@@ -7,6 +7,7 @@ import { RegisterComponent } from '../components/register/register.component';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs';
+import { ShoppingListComponent } from '../components/shopping-list/shopping-list.component';
 
 const AuthGuard: ResolveFn<boolean> = () => {
   const authService = inject(AuthService);
@@ -42,6 +43,11 @@ export const routes: Routes = [
   {
     path: 'recipe-details/:recipeId',
     component: RecipeDetailsComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'shopping-list',
+    component: ShoppingListComponent,
     canActivate: [AuthGuard],
   },
   {

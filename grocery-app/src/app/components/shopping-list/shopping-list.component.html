@@ -1,0 +1,15 @@
+<div *ngIf="!showIngredients">
+  <div *ngFor="let recipe of recipe$()">
+    <input type="checkbox" (change)="toggleRecipeSelection(recipe.id)" />
+    {{ recipe.name }}
+  </div>
+  <button (click)="generateShoppingList()">Generate Shopping List</button>
+</div>
+<div *ngIf="showIngredients">
+  <ul>
+    <li *ngFor="let ingredient of combinedIngredients">
+      {{ ingredient.name }}: {{ ingredient.amount }}
+    </li>
+  </ul>
+  <button (click)="goBack()">Go Back</button>
+</div>
