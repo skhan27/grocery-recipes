@@ -1,5 +1,10 @@
+<input
+  type="text"
+  placeholder="Search recipes..."
+  (input)="searchRecipes($event)"
+/>
 <ul>
-  @for (recipe of recipe$(); track $index) {
+  @for (recipe of filteredRecipes(); track $index) {
   <li>
     <a (click)="viewRecipeDetails(recipe.id)">{{ recipe.name }}</a>
   </li>

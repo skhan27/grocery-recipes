@@ -3,9 +3,11 @@ import {
   addDoc,
   collection,
   collectionData,
+  deleteDoc,
   doc,
   Firestore,
   getDoc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
 import { Recipe } from '../models/recipe';
@@ -34,5 +36,27 @@ export class RecipeFirebaseService {
       (res) => res.id
     );
     return from(promise);
+  }
+
+  updateRecipe(recipe: Recipe): Observable<void> {
+    const docRef = doc(this.firestore, `recipes/${recipe.id}`);
+    return from(
+      updateDoc(docRef, {
+        items: recipe.items,
+        name: recipe.name,
+        notes: recipe.notes,
+        instructions: recipe.instructions,
+        servings: recipe.servings,
+        rating: recipe.rating,
+        tags: recipe.tags,
+        prepTime: recipe.prepTime,
+        cookTime: recipe.cookTime,
+      })
+    );
+  }
+
+  deleteRecipe(id: string): Observable<void> {
+    const docRef = doc(this.firestore, `recipes/${id}`);
+    return from(deleteDoc(docRef));
   }
 }
