@@ -27,7 +27,10 @@ export class RecipeFirebaseService {
 
   getRecipeById(id: string): Observable<Recipe> {
     return from(
-      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => val.data())
+      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => ({
+        ...val.data(),
+        id: val.id,
+      }))
     ) as Observable<Recipe>;
   }
 
@@ -38,6 +41,7 @@ export class RecipeFirebaseService {
     return from(promise);
   }
 
+  //TODO: Update doesnt work due to no doc error for some reason.
   updateRecipe(recipe: Recipe): Observable<void> {
     const docRef = doc(this.firestore, `recipes/${recipe.id}`);
     return from(

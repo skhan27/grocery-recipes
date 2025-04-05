@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { Recipe } from '../../models/recipe';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 import { RecipeService } from '../../services/recipe.service';
-import { uuidv7 } from 'uuidv7';
 import { RecipeFormComponent } from '../recipe-form/recipe-form.component';
 
 @Component({
@@ -22,7 +21,6 @@ export class CreateRecipeComponent {
   router = inject(Router);
 
   onSubmit(recipe: Recipe): void {
-    recipe.id = uuidv7();
     this.recipeFirebaseService.addRecipe(recipe).subscribe(() => {
       this.router.navigate(['/list']);
     });

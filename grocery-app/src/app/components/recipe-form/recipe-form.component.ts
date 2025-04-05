@@ -51,8 +51,8 @@ export class RecipeFormComponent implements OnInit {
     if (this.recipe) {
       this.recipeForm.patchValue({
         ...this.recipe,
-        tags: this.recipe.tags.join(', '),
-        instructions: this.recipe.instructions.join('\n'),
+        tags: this.recipe.tags?.join(', ') || '',
+        instructions: this.recipe.instructions?.join('\n') || '',
       });
       this.recipeForm.setControl(
         'items',
