@@ -1,5 +1,4 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { RecipeService } from '../../services/recipe.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';

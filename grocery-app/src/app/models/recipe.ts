@@ -11,4 +11,6 @@ export interface Recipe {
   tags: string[];
   prepTime: number;
   cookTime: number;
+  householdId?: string;
+  createdById?: string;
 }

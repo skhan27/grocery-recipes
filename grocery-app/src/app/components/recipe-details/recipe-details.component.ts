@@ -5,7 +5,6 @@ import {
   Input,
   OnInit,
 } from '@angular/core';
-import { RecipeService } from '../../services/recipe.service';
 import { Observable } from 'rxjs';
 import { Recipe } from '../../models/recipe';
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
@@ -22,7 +21,6 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 })
 export class RecipeDetailsComponent implements OnInit {
   @Input() recipeId: string;
-  recipeService = inject(RecipeService);
   recipeFirebaseService = inject(RecipeFirebaseService);
   recipe$: Observable<Recipe>;
   scaleControl = new FormControl(1);

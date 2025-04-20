@@ -9,7 +9,6 @@ import {
   ReactiveFormsModule,
 } from '@angular/forms';
 import { Unit } from '../../models/unit';
-import { RecipeService } from '../../services/recipe.service';
 import { Recipe } from '../../models/recipe';
 import { RecipeItem } from '../../models/recipe-item';
 import { Router } from '@angular/router';
@@ -26,7 +25,6 @@ import { uuidv7 } from 'uuidv7';
 })
 export class CreateRecipeComponent {
   recipeForm: FormGroup;
-  recipeService = inject(RecipeService);
   recipeFirebaseService = inject(RecipeFirebaseService);
   router = inject(Router);
   units = Object.values(Unit);
