@@ -1,0 +1,19 @@
+<div class="account-settings">
+  <h1>Account Settings</h1>
+  @if (user$ | async; as user) {
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p>
+      <strong>Household ID:</strong>
+      @if (user.householdId) {
+        {{ user.householdId }}
+      } @else {
+        <button (click)="createHousehold()">Create Household</button> OR Enter Household ID:
+        <input type="text" [(ngModel)]="householdId" placeholder="Enter Household ID" />
+        <button (click)="joinHousehold(householdId)">Join Household</button>
+      }
+    </p>
+  } @else {
+    <p>Loading user data...</p>
+  }
+</div>

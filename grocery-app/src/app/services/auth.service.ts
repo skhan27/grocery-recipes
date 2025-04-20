@@ -6,9 +6,11 @@ import {
   signOut,
   updateProfile,
   user,
+  UserCredential,
 } from '@angular/fire/auth';
 import { from, map, Observable, of } from 'rxjs';
 import { User } from '../models/user';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -16,13 +18,16 @@ import { User } from '../models/user';
 export class AuthService {
   private firebaseAuth = inject(Auth);
   user$ = user(this.firebaseAuth);
-
+  userCredential$ = toSignal(this.user$.pipe(map(user => {
+    return user ? { user } : null;
+  })));
   login(email: string, password: string): Observable<void> {
     const req = signInWithEmailAndPassword(
       this.firebaseAuth,
       email,
       password
-    ).then((res) => {});
+    ).then((res) => {
+    });
     return from(req);
   }
 
@@ -35,11 +40,11 @@ export class AuthService {
       this.firebaseAuth,
       email,
       password
-    ).then((res) =>
-      updateProfile(res.user, {
+    ).then((res) =>{
+      return updateProfile(res.user, {
         displayName: username,
       })
-    );
+    });
     return from(req);
   }
 

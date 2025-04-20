@@ -2,8 +2,9 @@ import { AsyncPipe, NgIf } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { map, Observable, shareReplay } from 'rxjs';
+import { map, Observable, shareReplay, tap } from 'rxjs';
 import { User } from '../../models/user';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -14,23 +15,13 @@ import { User } from '../../models/user';
 })
 export class AppComponent implements OnInit {
   authService = inject(AuthService);
+  userService = inject(UserService);
   router = inject(Router);
   user$: Observable<User | null>;
   isLoggedIn$: Observable<boolean>;
 
   ngOnInit(): void {
-    this.user$ = this.authService.user$.pipe(
-      map((user) => {
-        if (user) {
-          return {
-            email: user.email!,
-            username: user.displayName!,
-            uid: user.uid,
-          };
-        }
-        return null;
-      })
-    );
+    this.user$ = this.userService.user$.pipe(tap(() => {console.log('User fetched');}));
     this.isLoggedIn$ = this.authService.isLoggedIn().pipe(shareReplay(1));
   }
 

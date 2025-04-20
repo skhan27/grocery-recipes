@@ -66,6 +66,8 @@ export class RecipeFirebaseService {
   //   const userSnapshot = await getDoc(userDoc);
   //   return userSnapshot.exists() ? userSnapshot.data()['householdId'] : null;
   // }
+
+  
   //TODO: Update doesnt work due to no doc error for some reason.
   updateRecipe(recipe: Recipe): Observable<void> {
     const docRef = doc(this.firestore, `recipes/${recipe.id}`);

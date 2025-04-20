@@ -8,6 +8,7 @@ import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs';
 import { ShoppingListComponent } from '../components/shopping-list/shopping-list.component';
+import { AccountSettingsComponent } from '../components/account-settings/account-settings.component';
 
 const AuthGuard: ResolveFn<boolean> = () => {
   const authService = inject(AuthService);
@@ -59,6 +60,12 @@ export const routes: Routes = [
     path: 'register',
     title: 'Register',
     component: RegisterComponent,
+  },
+  {
+    path: 'account-settings',
+    title: 'Account Settings',
+    component: AccountSettingsComponent,
+    canActivate: [AuthGuard],
   },
   {
     path: '**',
