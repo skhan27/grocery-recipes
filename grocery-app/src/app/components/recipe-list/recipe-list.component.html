@@ -3,10 +3,47 @@
   placeholder="Search recipes..."
   (input)="searchRecipes($event)"
 />
-<ul>
-  @for (recipe of filteredRecipes(); track $index) {
-  <li>
-    <a (click)="viewRecipeDetails(recipe.id)">{{ recipe.name }}</a>
-  </li>
+<div>
+  <table>
+    <thead>
+      <tr>
+        @for (column of allColumns; track $index) { @if
+        (enabledColumns.includes(column)) {
+        <th>{{ column }}</th>
+        } }
+      </tr>
+    </thead>
+    <tbody>
+      @for (recipe of filteredRecipes(); track $index) {
+      <tr>
+        @for (column of allColumns; track $index) { @if
+        (enabledColumns.includes(column)) {
+        <td>
+          @if (column === 'tags') {
+          {{ recipe[column].join(", ") }}
+          } @else {
+          {{ recipe[column] }}
+          }
+        </td>
+        } }
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <button (click)="toggleMenu()">Toggle Menu</button>
+  @if (menuExpanded) {
+  <div class="menu">
+    @for (column of allColumns; track $index) {
+    <label>
+      <input
+        type="checkbox"
+        [checked]="enabledColumns.includes(column)"
+        (change)="toggleColumn(column)"
+      />
+      {{ column }}
+    </label>
+    }
+  </div>
   }
-</ul>
+</div>

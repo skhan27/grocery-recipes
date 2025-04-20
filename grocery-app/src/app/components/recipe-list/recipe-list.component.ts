@@ -27,6 +27,18 @@ export class RecipeListComponent implements OnInit {
   filteredRecipes: Signal<Recipe[]>;
   searchValue = signal('');
   router = inject(Router);
+  allColumns: (keyof Recipe)[] = [
+    'name',
+    'tags',
+    'rating',
+    'notes',
+    'instructions',
+    'servings',
+    'prepTime',
+    'cookTime',
+  ];
+  enabledColumns: string[] = ['name', 'tags', 'rating']; // Default enabled columns
+  menuExpanded: boolean = false;
 
   ngOnInit(): void {
     this.filteredRecipes = computed(() => {
@@ -34,6 +46,19 @@ export class RecipeListComponent implements OnInit {
         recipe.name.toLowerCase().includes(this.searchValue().toLowerCase())
       );
     });
+  }
+
+  toggleMenu() {
+    this.menuExpanded = !this.menuExpanded;
+  }
+
+  toggleColumn(column: string) {
+    const index = this.enabledColumns.indexOf(column);
+    if (index === -1) {
+      this.enabledColumns.push(column);
+    } else {
+      this.enabledColumns.splice(index, 1);
+    }
   }
 
   viewRecipeDetails(recipeId: string): void {
