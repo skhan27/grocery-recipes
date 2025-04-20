@@ -3,11 +3,13 @@ import {
   addDoc,
   collection,
   collectionData,
+  deleteDoc,
   doc,
   Firestore,
   getDoc,
   query,
   where,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
 import { Recipe } from '../models/recipe';
@@ -29,7 +31,10 @@ export class RecipeFirebaseService {
 
   getRecipeById(id: string): Observable<Recipe> {
     return from(
-      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => val.data())
+      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => ({
+        ...val.data(),
+        id: val.id,
+      }))
     ) as Observable<Recipe>;
   }
 
@@ -61,4 +66,26 @@ export class RecipeFirebaseService {
   //   const userSnapshot = await getDoc(userDoc);
   //   return userSnapshot.exists() ? userSnapshot.data()['householdId'] : null;
   // }
+  //TODO: Update doesnt work due to no doc error for some reason.
+  updateRecipe(recipe: Recipe): Observable<void> {
+    const docRef = doc(this.firestore, `recipes/${recipe.id}`);
+    return from(
+      updateDoc(docRef, {
+        items: recipe.items,
+        name: recipe.name,
+        notes: recipe.notes,
+        instructions: recipe.instructions,
+        servings: recipe.servings,
+        rating: recipe.rating,
+        tags: recipe.tags,
+        prepTime: recipe.prepTime,
+        cookTime: recipe.cookTime,
+      })
+    );
+  }
+
+  deleteRecipe(id: string): Observable<void> {
+    const docRef = doc(this.firestore, `recipes/${id}`);
+    return from(deleteDoc(docRef));
+  }
 }

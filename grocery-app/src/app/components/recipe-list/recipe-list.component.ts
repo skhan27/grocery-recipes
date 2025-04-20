@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
@@ -16,14 +16,30 @@ export class RecipeListComponent implements OnInit {
     initialValue: [],
   });
 
-
-  allColumns: (keyof Recipe)[] = ['name', 'tags', 'rating', 'notes', 'instructions', 'servings', 'prepTime', 'cookTime'];
+  filteredRecipes: Signal<Recipe[]>;
+  searchValue = signal('');
+  router = inject(Router);
+  allColumns: (keyof Recipe)[] = [
+    'name',
+    'tags',
+    'rating',
+    'notes',
+    'instructions',
+    'servings',
+    'prepTime',
+    'cookTime',
+  ];
   enabledColumns: string[] = ['name', 'tags', 'rating']; // Default enabled columns
   menuExpanded: boolean = false;
-  router = inject(Router);
-  
-  ngOnInit(): void {}
-  
+
+  ngOnInit(): void {
+    this.filteredRecipes = computed(() => {
+      return this.recipe$().filter((recipe) =>
+        recipe.name.toLowerCase().includes(this.searchValue().toLowerCase())
+      );
+    });
+  }
+
   toggleMenu() {
     this.menuExpanded = !this.menuExpanded;
   }
@@ -39,5 +55,9 @@ export class RecipeListComponent implements OnInit {
 
   viewRecipeDetails(recipeId: string): void {
     this.router.navigate(['/recipe-details', recipeId]);
+  }
+
+  searchRecipes(event: any): void {
+    this.searchValue.set(event.target.value);
   }
 }
