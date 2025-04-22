@@ -12,5 +12,5 @@ export interface Recipe {
   prepTime: number;
   cookTime: number;
   householdId?: string;
-  createdById?: string;
+  createdBy?: string;
 }

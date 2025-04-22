@@ -3,7 +3,6 @@ import { UserService } from '../../services/user.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { User } from '../../models/user';
 import { AsyncPipe } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
 @Component({
