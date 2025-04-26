@@ -1,2 +1,17 @@
-.app-container {
+.app-container {}
+
+/* Add spacing between navbar items */
+.navbar-nav .nav-item {
+    margin-right: 10px;
+}
+
+/* Style the active link */
+.navbar-nav .nav-link.active {
+    font-weight: bold;
+    color: #007bff !important;
+}
+
+/* Add padding to the main container */
+.container {
+    padding-top: 20px;
 }

@@ -71,7 +71,7 @@ export class RecipeFirebaseService {
       }));
   }
 
-  
+
   //TODO: Update doesnt work due to no doc error for some reason. Also need to test out the update of user data.
   updateRecipe(recipe: Recipe): Observable<void> {
     return this.userService.user$.pipe(take(1), switchMap(user => {
@@ -102,5 +102,19 @@ export class RecipeFirebaseService {
   deleteRecipe(id: string): Observable<void> {
     const docRef = doc(this.firestore, `recipes/${id}`);
     return from(deleteDoc(docRef));
+  }
+
+  incrementRecipeUsage(recipeId: string): Promise<void> {
+    const recipeDoc = doc(this.recipeCollection, recipeId);
+    return getDoc(recipeDoc).then((docSnap) => {
+      if (docSnap.exists()) {
+        const currentCount = docSnap.data()['numOfTimesAddedToShoppingList'] || 0;
+        return updateDoc(recipeDoc, {
+          numOfTimesAddedToShoppingList: currentCount + 1,
+        });
+      } else {
+        throw new Error('Recipe not found');
+      }
+    });
   }
 }

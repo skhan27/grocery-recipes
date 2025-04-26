@@ -1,8 +1,4 @@
-<input
-  type="text"
-  placeholder="Search recipes..."
-  (input)="searchRecipes($event)"
-/>
+<input type="text" placeholder="Search recipes..." (input)="searchRecipes($event)" />
 <div>
   <table>
     <thead>
@@ -15,7 +11,7 @@
     </thead>
     <tbody>
       @for (recipe of filteredRecipes(); track $index) {
-      <tr>
+      <tr (click)="viewRecipeDetails(recipe.id)">
         @for (column of allColumns; track $index) { @if
         (enabledColumns.includes(column)) {
         <td>
@@ -36,11 +32,7 @@
   <div class="menu">
     @for (column of allColumns; track $index) {
     <label>
-      <input
-        type="checkbox"
-        [checked]="enabledColumns.includes(column)"
-        (change)="toggleColumn(column)"
-      />
+      <input type="checkbox" [checked]="enabledColumns.includes(column)" (change)="toggleColumn(column)" />
       {{ column }}
     </label>
     }

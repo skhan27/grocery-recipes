@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NgFor, NgIf } from '@angular/common';
 import { Recipe } from '../../models/recipe';
 import { Amount } from '../../models/amount';
+import { ShoppingListService } from '../../services/shopping-list.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-shopping-list',
@@ -13,7 +15,7 @@ import { Amount } from '../../models/amount';
   styleUrl: './shopping-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ShoppingListComponent {
+export class ShoppingListComponent implements OnDestroy, OnInit {
   public recipe$ = toSignal(inject(RecipeFirebaseService).getRecipes(), {
     initialValue: [],
   });
@@ -21,23 +23,49 @@ export class ShoppingListComponent {
   selectedRecipes: Set<string> = new Set();
   showIngredients = false;
   combinedIngredients: { name: string; amount: Amount }[] = [];
+  shoppingList: string[] = [];
+
+  private shoppingListService = inject(ShoppingListService);
+
+  private destroy$ = new Subject<void>();
+
+  ngOnInit(): void {
+    this.fetchShoppingList();
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   toggleRecipeSelection(recipeId: string): void {
-    if (this.selectedRecipes.has(recipeId) === false) {
-      this.selectedRecipes.add(recipeId);
-    } else {
+    if (this.selectedRecipes.has(recipeId)) {
       this.selectedRecipes.delete(recipeId);
+    } else {
+      this.selectedRecipes.add(recipeId);
     }
   }
 
   generateShoppingList(): void {
-    // Logic to combine ingredients from selected recipes
-    this.combinedIngredients = this.combineIngredients();
-    this.showIngredients = true;
+    const selectedRecipeIds = Array.from(this.selectedRecipes);
+    this.shoppingListService.saveShoppingList(selectedRecipeIds).pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.combinedIngredients = this.combineIngredients();
+      this.showIngredients = true;
+    });
   }
 
-  goBack(): void {
-    this.showIngredients = false;
+  clearShoppingList(): void {
+    this.shoppingListService.clearShoppingList().pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.shoppingList = [];
+      this.selectedRecipes.clear();
+      this.showIngredients = false;
+    });
+  }
+
+  private fetchShoppingList(): void {
+    this.shoppingListService.getShoppingList().pipe(takeUntil(this.destroy$)).subscribe((list) => {
+      this.shoppingList = list;
+      this.selectedRecipes = new Set(list);
+    });
   }
 
   private combineIngredients(): { name: string; amount: Amount }[] {
@@ -46,10 +74,10 @@ export class ShoppingListComponent {
     selectedRecipes.forEach((recipe) => {
       recipe.items.forEach((ingredient) => {
         if (ingredientsMap[ingredient.name]) {
-          //TODO: Add logic to combine ingredients
+          // Combine ingredient amounts
           ingredientsMap[ingredient.name] = ingredient.amount;
         } else {
-          ingredientsMap[ingredient.name] = ingredient.amount;
+          ingredientsMap[ingredient.name] = { ...ingredient.amount };
         }
       });
     });
@@ -60,7 +88,6 @@ export class ShoppingListComponent {
   }
 
   private getSelectedRecipes(): Recipe[] {
-    // Placeholder method to get selected recipes by IDs
     return this.recipe$().filter((recipe) =>
       this.selectedRecipes.has(recipe.id)
     );
