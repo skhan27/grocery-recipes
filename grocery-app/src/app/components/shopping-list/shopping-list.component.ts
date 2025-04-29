@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NgFor, NgIf } from '@angular/common';
@@ -6,6 +6,7 @@ import { Recipe } from '../../models/recipe';
 import { Amount } from '../../models/amount';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { Subject, takeUntil } from 'rxjs';
+import { ShoppingListIngredient } from '../../models/shopping-list';
 
 @Component({
   selector: 'app-shopping-list',
@@ -21,9 +22,10 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
   });
 
   selectedRecipes: Set<string> = new Set();
-  showIngredients = false;
-  combinedIngredients: { name: string; amount: Amount }[] = [];
+  showIngredients = signal(false);
+  combinedIngredients: ShoppingListIngredient[] = [];
   shoppingList: string[] = [];
+  isInitialized = signal(false);
 
   private shoppingListService = inject(ShoppingListService);
 
@@ -44,12 +46,44 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
       this.selectedRecipes.add(recipeId);
     }
   }
+  moveIngredientUp(index: number): void {
+    if (index > 0) {
+      const temp = this.combinedIngredients[index];
+      this.combinedIngredients[index] = this.combinedIngredients[index - 1];
+      this.combinedIngredients[index - 1] = temp;
+    }
+  }
+
+  moveIngredientDown(index: number): void {
+    if (index < this.combinedIngredients.length - 1) {
+      const temp = this.combinedIngredients[index];
+      this.combinedIngredients[index] = this.combinedIngredients[index + 1];
+      this.combinedIngredients[index + 1] = temp;
+    }
+  }
+
+  toggleIngredientChecked(ingredientName: string): void {
+    const ingredient = this.combinedIngredients.find((i) => i.name === ingredientName);
+    const checked = ingredient ? !ingredient.checked : false;
+    this.shoppingListService.updateIngredient(ingredientName, checked).subscribe(() => {
+      const ingredient = this.combinedIngredients.find((i) => i.name === ingredientName);
+      if (ingredient) {
+        ingredient.checked = checked;
+      }
+    });
+  }
 
   generateShoppingList(): void {
     const selectedRecipeIds = Array.from(this.selectedRecipes);
-    this.shoppingListService.saveShoppingList(selectedRecipeIds).pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.combinedIngredients = this.combineIngredients();
-      this.showIngredients = true;
+    const combinedIngredients = this.combineIngredients();
+    const ingredients = combinedIngredients.map((ingredient) => ({
+      name: ingredient.name,
+      amount: ingredient.amount,
+      checked: false, // Default to unchecked when generating the list
+    }));
+    this.shoppingListService.saveShoppingList(selectedRecipeIds, ingredients).pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.combinedIngredients = ingredients
+      this.showIngredients.set(true);
     });
   }
 
@@ -57,18 +91,26 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
     this.shoppingListService.clearShoppingList().pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.shoppingList = [];
       this.selectedRecipes.clear();
-      this.showIngredients = false;
+      this.showIngredients.set(false);
     });
   }
 
   private fetchShoppingList(): void {
     this.shoppingListService.getShoppingList().pipe(takeUntil(this.destroy$)).subscribe((list) => {
-      this.shoppingList = list;
-      this.selectedRecipes = new Set(list);
+      this.isInitialized.set(true);
+      if (list.length === 0) {
+        this.showIngredients.set(false);
+      } else {
+        this.showIngredients.set(true);
+        this.shoppingList = list;
+        this.selectedRecipes = new Set(this.shoppingList);
+        this.combinedIngredients = this.combineIngredients();
+      }
+
     });
   }
 
-  private combineIngredients(): { name: string; amount: Amount }[] {
+  private combineIngredients(): ShoppingListIngredient[] {
     const ingredientsMap: { [key: string]: Amount } = {};
     const selectedRecipes = this.getSelectedRecipes();
     selectedRecipes.forEach((recipe) => {
@@ -84,6 +126,7 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
     return Object.keys(ingredientsMap).map((name) => ({
       name,
       amount: ingredientsMap[name],
+      checked: false, // Default to unchecked
     }));
   }
 

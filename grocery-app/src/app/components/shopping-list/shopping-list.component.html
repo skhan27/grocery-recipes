@@ -1,15 +1,20 @@
-<div *ngIf="!showIngredients">
-  <div *ngFor="let recipe of recipe$()">
-    <input type="checkbox" [checked]="selectedRecipes.has(recipe.id)" (change)="toggleRecipeSelection(recipe.id)" />
-    {{ recipe.name }}
+<div *ngIf="isInitialized">
+  <div *ngIf="!showIngredients()">
+    <div *ngFor="let recipe of recipe$()">
+      <input type="checkbox" [checked]="selectedRecipes.has(recipe.id)" (change)="toggleRecipeSelection(recipe.id)" />
+      {{ recipe.name }}
+    </div>
+    <button (click)="generateShoppingList()">Generate Shopping List</button>
   </div>
-  <button (click)="generateShoppingList()">Generate Shopping List</button>
-</div>
-<div *ngIf="showIngredients">
-  <ul>
-    <li *ngFor="let ingredient of combinedIngredients">
-      {{ ingredient.name }}: {{ ingredient.amount.amount }} {{ ingredient.amount.unit }}
-    </li>
-  </ul>
-  <button (click)="clearShoppingList()">Clear Shopping List</button>
+  <div *ngIf="showIngredients()">
+    <ul>
+      <li *ngFor="let ingredient of combinedIngredients; let i = index">
+        <input type="checkbox" [checked]="ingredient.checked" (change)="toggleIngredientChecked(ingredient.name)" />
+        {{ ingredient.name }}: {{ ingredient.amount.amount }} {{ ingredient.amount.unit }}
+        <button *ngIf="i > 0" (click)="moveIngredientUp(i)">Up</button>
+        <button *ngIf="i < combinedIngredients.length - 1" (click)="moveIngredientDown(i)">Down</button>
+      </li>
+    </ul>
+    <button (click)="clearShoppingList()">Clear Shopping List</button>
+  </div>
 </div>

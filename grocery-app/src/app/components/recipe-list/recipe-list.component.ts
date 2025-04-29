@@ -28,6 +28,7 @@ export class RecipeListComponent implements OnInit {
     'servings',
     'prepTime',
     'cookTime',
+    'numOfTimesAddedToShoppingList',
   ];
   enabledColumns: string[] = ['name', 'tags', 'rating']; // Default enabled columns
   menuExpanded: boolean = false;
