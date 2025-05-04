@@ -7,6 +7,7 @@ import { Amount } from '../../models/amount';
 import { ShoppingListService } from '../../services/shopping-list.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ShoppingListIngredient } from '../../models/shopping-list';
+import { debounceTime, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-shopping-list',
@@ -28,12 +29,27 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
   isInitialized = signal(false);
 
   private shoppingListService = inject(ShoppingListService);
-
   private destroy$ = new Subject<void>();
+  private ingredientOrderChange$ = new Subject<ShoppingListIngredient[]>(); // Subject to track order changes
 
   ngOnInit(): void {
     this.fetchShoppingList();
+
+    // Debounce ingredient order changes and call the service
+    this.ingredientOrderChange$
+      .pipe(
+        debounceTime(1000), // Wait for 1 second after the last change
+        switchMap((updatedIngredients) =>
+          this.shoppingListService.updateIngredientOrder({
+            recipes: this.shoppingList,
+            ingredients: updatedIngredients,
+          })
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
   }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -46,11 +62,15 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
       this.selectedRecipes.add(recipeId);
     }
   }
+
   moveIngredientUp(index: number): void {
     if (index > 0) {
       const temp = this.combinedIngredients[index];
       this.combinedIngredients[index] = this.combinedIngredients[index - 1];
       this.combinedIngredients[index - 1] = temp;
+
+      // Emit the updated order
+      this.ingredientOrderChange$.next(this.combinedIngredients);
     }
   }
 
@@ -59,6 +79,9 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
       const temp = this.combinedIngredients[index];
       this.combinedIngredients[index] = this.combinedIngredients[index + 1];
       this.combinedIngredients[index + 1] = temp;
+
+      // Emit the updated order
+      this.ingredientOrderChange$.next(this.combinedIngredients);
     }
   }
 
@@ -82,7 +105,7 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
       checked: false, // Default to unchecked when generating the list
     }));
     this.shoppingListService.saveShoppingList(selectedRecipeIds, ingredients).pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.combinedIngredients = ingredients
+      this.combinedIngredients = ingredients;
       this.showIngredients.set(true);
     });
   }
@@ -106,7 +129,6 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
         this.selectedRecipes = new Set(this.shoppingList);
         this.combinedIngredients = this.combineIngredients();
       }
-
     });
   }
 

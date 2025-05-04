@@ -103,4 +103,36 @@ export class ShoppingListService {
             })
         );
     }
+
+    updateIngredientOrder(orderedShoppingList: ShoppingList): Observable<void> {
+        return this.userService.user$.pipe(
+            take(1),
+            switchMap((user) => {
+                if (!user) {
+                    throw new Error('User not logged in');
+                }
+                const householdId = user.householdId || user.uid;
+                const shoppingListDoc = doc(this.shoppingListCollection, householdId);
+                return from(getDoc(shoppingListDoc)).pipe(
+                    switchMap((docSnap) => {
+                        if (docSnap.exists()) {
+                            const shoppingList = docSnap.data() as ShoppingList;
+                            this.reorderIngredients(shoppingList.ingredients, orderedShoppingList.ingredients);
+                            return from(setDoc(shoppingListDoc, shoppingList));
+                        } else {
+                            throw new Error('Shopping list not found');
+                        }
+                    })
+                );
+            })
+        );
+    }
+
+    private reorderIngredients(sourceList: ShoppingListIngredient[], targetList: ShoppingListIngredient[]): ShoppingListIngredient[] {
+        const targetOrder = targetList.map((ingredient) => ingredient.name);
+        const reorderedList = sourceList.sort((a, b) => {
+            return targetOrder.indexOf(a.name) - targetOrder.indexOf(b.name);
+        });
+        return reorderedList;
+    }
 }
