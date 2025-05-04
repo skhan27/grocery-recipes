@@ -23,7 +23,9 @@
         </tr>
       </tbody>
     </table>
-    <button class="btn btn-primary" (click)="generateShoppingList()">Generate Shopping List</button>
+    <button class="btn btn-primary" (click)="generateShoppingList()">
+      <i class="bi bi-list-check me-1"></i>Generate Shopping List
+    </button>
   </div>
   <div *ngIf="showIngredients()">
     <ul class="list-group mb-3">
@@ -46,6 +48,8 @@
         </div>
       </li>
     </ul>
-    <button class="btn btn-danger" (click)="clearShoppingList()">Clear Shopping List</button>
+    <button class="btn btn-danger" (click)="clearShoppingList()">
+      <i class="bi bi-trash me-1"></i>Clear Shopping List
+    </button>
   </div>
 </div>

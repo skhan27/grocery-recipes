@@ -1,64 +1,61 @@
 <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
-  <input formControlName="name" placeholder="Recipe Name" required />
-  Servings:
-  <input
-    formControlName="servings"
-    placeholder="Servings"
-    type="number"
-    min="1"
-  />
-  Prep time:
-  <input
-    formControlName="prepTime"
-    placeholder="Prep Time"
-    type="number"
-    min="0"
-  />
-  Cook Time:
-  <input
-    formControlName="cookTime"
-    placeholder="Cook Time"
-    type="number"
-    min="0"
-  />
-
-  Rating:
-  <input
-    formControlName="rating"
-    placeholder="Rating"
-    type="number"
-    min="0"
-    max="5"
-  />
-  Tags:
-  <input formControlName="tags" placeholder="Tags" />
-  <div formArrayName="items">
-    <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
-      <input formControlName="name" placeholder="Item Name" required />
-      <input
-        formControlName="amount"
-        placeholder="Amount"
-        type="number"
-        min="0"
-        required
-      />
-      <select formControlName="unit" required>
-        <option value="" disabled>Select Unit</option>
-        <option *ngFor="let unit of units" [value]="unit">{{ unit }}</option>
-      </select>
-      <button type="button" (click)="removeItem(i)">Remove</button>
+  <div class="mb-3">
+    <input formControlName="name" class="form-control" placeholder="Recipe Name" required />
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-people me-1"></i>Servings:</label>
+    <input formControlName="servings" class="form-control" placeholder="Servings" type="number" min="1" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-hourglass-split me-1"></i>Prep time:</label>
+    <input formControlName="prepTime" class="form-control" placeholder="Prep Time" type="number" min="0" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-fire me-1"></i>Cook Time:</label>
+    <input formControlName="cookTime" class="form-control" placeholder="Cook Time" type="number" min="0" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-star me-1"></i>Rating:</label>
+    <input formControlName="rating" class="form-control" placeholder="Rating" type="number" min="0" max="5" />
+  </div>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-tags me-1"></i>Tags:</label>
+    <input formControlName="tags" class="form-control" placeholder="Tags" />
+  </div>
+  <div formArrayName="items" class="mb-3">
+    <label class="form-label"><i class="bi bi-list-ul me-1"></i>Ingredients:</label>
+    <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row g-2 align-items-end mb-2">
+      <div class="col">
+        <input formControlName="name" class="form-control" placeholder="Item Name" required />
+      </div>
+      <div class="col">
+        <input formControlName="amount" class="form-control" placeholder="Amount" type="number" min="0" required />
+      </div>
+      <div class="col">
+        <select formControlName="unit" class="form-select" required>
+          <option value="" disabled>Select Unit</option>
+          <option *ngFor="let unit of units" [value]="unit">{{ unit }}</option>
+        </select>
+      </div>
+      <div class="col-auto">
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeItem(i)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
     </div>
+    <button type="button" class="btn btn-outline-primary btn-sm" (click)="addItem()">
+      <i class="bi bi-plus-circle"></i> Add Item
+    </button>
   </div>
-  <button type="button" (click)="addItem()">Add Item</button>
-  <div>
-    <textarea
-      formControlName="instructions"
-      placeholder="Instructions"
-      required
-    ></textarea>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-list-ol me-1"></i>Instructions:</label>
+    <textarea formControlName="instructions" class="form-control" placeholder="Instructions" required></textarea>
   </div>
-  <div>
-    <textarea formControlName="notes" placeholder="Additional Notes"></textarea>
+  <div class="mb-3">
+    <label class="form-label"><i class="bi bi-sticky me-1"></i>Additional Notes:</label>
+    <textarea formControlName="notes" class="form-control" placeholder="Additional Notes"></textarea>
   </div>
-  <button type="submit">{{ submitButtonText }}</button>
+  <button type="submit" class="btn btn-success w-100">
+    <i class="bi bi-save me-1"></i>{{ submitButtonText }}
+  </button>
 </form>

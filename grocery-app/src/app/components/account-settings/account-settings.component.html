@@ -1,31 +1,35 @@
 <div class="container account-settings mt-4">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h1 class="card-title mb-4">Account Settings</h1>
+      <h1 class="card-title mb-4"><i class="bi bi-person-gear me-2"></i>Account Settings</h1>
       @if (user$ | async; as user) {
       <div class="mb-3">
-        <label class="form-label fw-bold">Username:</label>
+        <label class="form-label fw-bold"><i class="bi bi-person me-1"></i>Username:</label>
         <div class="form-control-plaintext">{{ user.username }}</div>
       </div>
       <div class="mb-3">
-        <label class="form-label fw-bold">Email:</label>
+        <label class="form-label fw-bold"><i class="bi bi-envelope me-1"></i>Email:</label>
         <div class="form-control-plaintext">{{ user.email }}</div>
       </div>
       <div class="mb-3">
-        <label class="form-label fw-bold">Household ID:</label>
+        <label class="form-label fw-bold"><i class="bi bi-people me-1"></i>Household ID:</label>
         @if (user.householdId) {
         <div class="form-control-plaintext">{{ user.householdId }}</div>
         } @else {
         <div class="input-group">
-          <button class="btn btn-primary" (click)="createHousehold()">Create Household</button>
+          <button class="btn btn-primary" (click)="createHousehold()">
+            <i class="bi bi-house-add me-1"></i>Create Household
+          </button>
           <span class="input-group-text">or</span>
           <input type="text" class="form-control" [(ngModel)]="householdId" placeholder="Enter Household ID" />
-          <button class="btn btn-success" (click)="joinHousehold(householdId)">Join Household</button>
+          <button class="btn btn-success" (click)="joinHousehold(householdId)">
+            <i class="bi bi-person-check me-1"></i>Join Household
+          </button>
         </div>
         }
       </div>
       } @else {
-      <div class="alert alert-info">Loading user data...</div>
+      <div class="alert alert-info"><i class="bi bi-info-circle me-1"></i>Loading user data...</div>
       }
     </div>
   </div>

@@ -1,15 +1,14 @@
 <form [formGroup]="registerForm" (ngSubmit)="register()" class="mt-4 mx-auto" style="max-width: 400px;">
   <div class="mb-3">
-    <label for="email" class="form-label">Email:</label>
+    <label for="email" class="form-label"><i class="bi bi-envelope me-1"></i>Email:</label>
     <input type="email" id="email" formControlName="email" class="form-control" required
       [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}" />
     <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
       Email is required and must be valid.
     </div>
   </div>
-
   <div class="mb-3">
-    <label for="username" class="form-label">Username:</label>
+    <label for="username" class="form-label"><i class="bi bi-person me-1"></i>Username:</label>
     <input id="username" formControlName="username" class="form-control" required
       [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}" />
     <div class="invalid-feedback"
@@ -17,9 +16,8 @@
       Username is required.
     </div>
   </div>
-
   <div class="mb-3">
-    <label for="password" class="form-label">Password:</label>
+    <label for="password" class="form-label"><i class="bi bi-lock me-1"></i>Password:</label>
     <input type="password" id="password" formControlName="password" class="form-control" required
       [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}" />
     <div class="invalid-feedback"
@@ -27,9 +25,8 @@
       Password is required and must be at least 6 characters long.
     </div>
   </div>
-
   <div class="mb-3">
-    <label for="confirmPassword" class="form-label">Confirm Password:</label>
+    <label for="confirmPassword" class="form-label"><i class="bi bi-lock-fill me-1"></i>Confirm Password:</label>
     <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" required
       [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}" />
     <div class="invalid-feedback"
@@ -37,10 +34,10 @@
       Confirm Password is required.
     </div>
   </div>
-
   <div *ngIf="errorMessage" class="alert alert-danger py-2">
-    <small>{{ errorMessage }}</small>
+    <small><i class="bi bi-exclamation-triangle me-1"></i>{{ errorMessage }}</small>
   </div>
-
-  <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">Register</button>
+  <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">
+    <i class="bi bi-person-plus me-1"></i>Register
+  </button>
 </form>
