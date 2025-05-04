@@ -1,44 +1,46 @@
-<form [formGroup]="registerForm" (ngSubmit)="register()">
-  <label for="email">Email:</label>
-  <input type="email" id="email" formControlName="email" required />
-  <div
-    *ngIf="
-      registerForm.get('email')?.invalid && registerForm.get('email')?.touched
-    "
-  >
-    <small>Email is required and must be valid.</small>
-  </div>
-  <label for="username">Username:</label>
-  <input id="username" formControlName="username" required />
-  <label for="password">Password:</label>
-  <input type="password" id="password" formControlName="password" required />
-  <div
-    *ngIf="
-      registerForm.get('password')?.invalid &&
-      registerForm.get('password')?.touched
-    "
-  >
-    <small>Password is required and must be at least 6 characters long.</small>
+<form [formGroup]="registerForm" (ngSubmit)="register()" class="mt-4 mx-auto" style="max-width: 400px;">
+  <div class="mb-3">
+    <label for="email" class="form-label">Email:</label>
+    <input type="email" id="email" formControlName="email" class="form-control" required
+      [ngClass]="{'is-invalid': registerForm.get('email')?.invalid && registerForm.get('email')?.touched}" />
+    <div class="invalid-feedback" *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+      Email is required and must be valid.
+    </div>
   </div>
 
-  <label for="confirmPassword">Confirm Password:</label>
-  <input
-    type="password"
-    id="confirmPassword"
-    formControlName="confirmPassword"
-    required
-  />
-  <div
-    *ngIf="
-      registerForm.get('confirmPassword')?.invalid &&
-      registerForm.get('confirmPassword')?.touched
-    "
-  >
-    <small>Confirm Password is required.</small>
+  <div class="mb-3">
+    <label for="username" class="form-label">Username:</label>
+    <input id="username" formControlName="username" class="form-control" required
+      [ngClass]="{'is-invalid': registerForm.get('username')?.invalid && registerForm.get('username')?.touched}" />
+    <div class="invalid-feedback"
+      *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched">
+      Username is required.
+    </div>
   </div>
 
-  <div *ngIf="errorMessage">
+  <div class="mb-3">
+    <label for="password" class="form-label">Password:</label>
+    <input type="password" id="password" formControlName="password" class="form-control" required
+      [ngClass]="{'is-invalid': registerForm.get('password')?.invalid && registerForm.get('password')?.touched}" />
+    <div class="invalid-feedback"
+      *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+      Password is required and must be at least 6 characters long.
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <label for="confirmPassword" class="form-label">Confirm Password:</label>
+    <input type="password" id="confirmPassword" formControlName="confirmPassword" class="form-control" required
+      [ngClass]="{'is-invalid': registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched}" />
+    <div class="invalid-feedback"
+      *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched">
+      Confirm Password is required.
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger py-2">
     <small>{{ errorMessage }}</small>
   </div>
-  <button type="submit" [disabled]="registerForm.invalid">Register</button>
+
+  <button type="submit" class="btn btn-primary w-100" [disabled]="registerForm.invalid">Register</button>
 </form>

@@ -1,20 +1,51 @@
 <div *ngIf="isInitialized">
   <div *ngIf="!showIngredients()">
-    <div *ngFor="let recipe of recipe$()">
-      <input type="checkbox" [checked]="selectedRecipes.has(recipe.id)" (change)="toggleRecipeSelection(recipe.id)" />
-      {{ recipe.name }}
-    </div>
-    <button (click)="generateShoppingList()">Generate Shopping List</button>
+    <table class="table table-striped table-bordered align-middle">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Recipe Name</th>
+          <th scope="col">Times Added</th>
+          <th scope="col">Ingredients</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let recipe of recipe$()">
+          <td>
+            <input type="checkbox" [checked]="selectedRecipes.has(recipe.id)"
+              (change)="toggleRecipeSelection(recipe.id)" />
+          </td>
+          <td>{{ recipe.name }}</td>
+          <td>{{ recipe.numOfTimesAddedToShoppingList || 0 }}</td>
+          <td>
+            {{ recipe.items | ingredientList }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-primary" (click)="generateShoppingList()">Generate Shopping List</button>
   </div>
   <div *ngIf="showIngredients()">
-    <ul>
-      <li *ngFor="let ingredient of combinedIngredients; let i = index">
-        <input type="checkbox" [checked]="ingredient.checked" (change)="toggleIngredientChecked(ingredient.name)" />
-        {{ ingredient.name }}: {{ ingredient.amount.amount }} {{ ingredient.amount.unit }}
-        <button *ngIf="i > 0" (click)="moveIngredientUp(i)">Up</button>
-        <button *ngIf="i < combinedIngredients.length - 1" (click)="moveIngredientDown(i)">Down</button>
+    <ul class="list-group mb-3">
+      <li class="list-group-item d-flex align-items-center"
+        *ngFor="let ingredient of combinedIngredients; let i = index">
+        <input type="checkbox" class="form-check-input me-2" [checked]="ingredient.checked"
+          (change)="toggleIngredientChecked(ingredient.name)" />
+        <span class="flex-grow-1">
+          {{ ingredient.name }}: {{ ingredient.amount.amount }} {{ ingredient.amount.unit }}
+        </span>
+        <div class="btn-group ms-2" role="group">
+          <button class="btn btn-outline-secondary btn-sm" *ngIf="i > 0" (click)="moveIngredientUp(i)" title="Move Up"
+            type="button">
+            <i class="bi bi-arrow-up"></i>
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" *ngIf="i < combinedIngredients.length - 1"
+            (click)="moveIngredientDown(i)" title="Move Down" type="button">
+            <i class="bi bi-arrow-down"></i>
+          </button>
+        </div>
       </li>
     </ul>
-    <button (click)="clearShoppingList()">Clear Shopping List</button>
+    <button class="btn btn-danger" (click)="clearShoppingList()">Clear Shopping List</button>
   </div>
 </div>

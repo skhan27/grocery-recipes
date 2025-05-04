@@ -1,41 +1,40 @@
-<div *ngIf="recipe$ | async as recipe">
-  <h1>{{ recipe.name }}</h1>
-  <button (click)="editMode = !editMode">
-    {{ editMode ? "Cancel" : "Edit" }}
-  </button>
-  <button (click)="onDelete()">Delete</button>
-  <div *ngIf="!editMode">
-    <h2>Ingredients</h2>
-    <div>
-      Scale this recipe:
-      <input
-        [formControl]="scaleControl"
-        type="number"
-        min="0.1"
-        step="0.1"
-        required
-      />
+<div *ngIf="recipe$ | async as recipe" class="container mt-4">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="card-title mb-0">{{ recipe.name }}</h1>
+        <div>
+          <button class="btn btn-outline-secondary me-2" (click)="editMode = !editMode">
+            {{ editMode ? "Cancel" : "Edit" }}
+          </button>
+          <button class="btn btn-danger" (click)="onDelete()">Delete</button>
+        </div>
+      </div>
+      <div *ngIf="!editMode">
+        <h4 class="mt-4">Ingredients</h4>
+        <div class="mb-3">
+          <label class="form-label">Scale this recipe:</label>
+          <input [formControl]="scaleControl" type="number" min="0.1" step="0.1" required
+            class="form-control d-inline-block" style="width: 120px;" />
+        </div>
+        <ul class="list-group mb-4">
+          <li class="list-group-item" *ngFor="let ingredient of recipe.items">
+            <span class="fw-bold">
+              {{ ingredient.amount.amount * (scaleControl.value ?? 1) }}
+              {{ ingredient.amount.unit }}
+            </span>
+            {{ ingredient.name }}
+          </li>
+        </ul>
+        <h4>Instructions</h4>
+        <p class="mb-4">{{ recipe.instructions }}</p>
+        <h4>Notes</h4>
+        <p>{{ recipe.notes }}</p>
+      </div>
+      <div *ngIf="editMode">
+        <app-recipe-form [recipe]="recipe" [submitButtonText]="'Save Changes'"
+          (formSubmit)="onSave($event)"></app-recipe-form>
+      </div>
     </div>
-    <ul>
-      <li *ngFor="let ingredient of recipe.items">
-        {{ ingredient.amount.amount * (scaleControl.value ?? 1) }}
-        {{ ingredient.amount.unit }} {{ ingredient.name }}
-      </li>
-    </ul>
-    <h2>Instructions</h2>
-    <p>
-      {{ recipe.instructions }}
-    </p>
-    <h2>Notes</h2>
-    <p>
-      {{ recipe.notes }}
-    </p>
-  </div>
-  <div *ngIf="editMode">
-    <app-recipe-form
-      [recipe]="recipe"
-      [submitButtonText]="'Save Changes'"
-      (formSubmit)="onSave($event)"
-    ></app-recipe-form>
   </div>
 </div>

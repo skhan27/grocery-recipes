@@ -101,7 +101,7 @@ export class RecipeFormComponent implements OnInit {
         notes: val.notes,
         rating: val.rating,
         servings: val.servings,
-        tags: val.tags.split(',').map((tag: string) => tag.trim()),
+        tags: (val.tags as string).split(',').map((tag: string) => tag.trim()).flatMap(val => val.split(' ')),
         prepTime: val.prepTime,
         cookTime: val.cookTime,
       };

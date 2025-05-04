@@ -8,11 +8,12 @@ import { ShoppingListService } from '../../services/shopping-list.service';
 import { Subject, takeUntil } from 'rxjs';
 import { ShoppingListIngredient } from '../../models/shopping-list';
 import { debounceTime, switchMap } from 'rxjs';
+import { IngredientListPipe } from '../../utils/ingredient-list.pipe';
 
 @Component({
   selector: 'app-shopping-list',
   standalone: true,
-  imports: [NgFor, NgIf],
+  imports: [NgFor, NgIf, IngredientListPipe],
   templateUrl: './shopping-list.component.html',
   styleUrl: './shopping-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

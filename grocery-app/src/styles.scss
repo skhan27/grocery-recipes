@@ -1,6 +1,8 @@
 @import "./app/variables.scss";
 /* Importing Bootstrap SCSS file. */
 @import "bootstrap/scss/bootstrap";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
 body {
   background-color: $background-color;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
