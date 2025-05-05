@@ -1,41 +1,43 @@
 <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
   <div class="mb-3">
-    <input formControlName="name" class="form-control" placeholder="Recipe Name" required />
+    <label class="form-label">Recipe Name: </label>
+    <input formControlName="name" class="form-control" placeholder="Recipe Name" required
+      [ngClass]="{'is-invalid': recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched}" />
+    <div class="invalid-feedback" *ngIf="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched">
+      Recipe name is required.
+    </div>
   </div>
   <div class="mb-3">
     <label class="form-label"><i class="bi bi-people me-1"></i>Servings:</label>
-    <input formControlName="servings" class="form-control" placeholder="Servings" type="number" min="1" />
-  </div>
-  <div class="mb-3">
-    <label class="form-label"><i class="bi bi-hourglass-split me-1"></i>Prep time:</label>
-    <input formControlName="prepTime" class="form-control" placeholder="Prep Time" type="number" min="0" />
-  </div>
-  <div class="mb-3">
-    <label class="form-label"><i class="bi bi-fire me-1"></i>Cook Time:</label>
-    <input formControlName="cookTime" class="form-control" placeholder="Cook Time" type="number" min="0" />
-  </div>
-  <div class="mb-3">
-    <label class="form-label"><i class="bi bi-star me-1"></i>Rating:</label>
-    <input formControlName="rating" class="form-control" placeholder="Rating" type="number" min="0" max="5" />
-  </div>
-  <div class="mb-3">
-    <label class="form-label"><i class="bi bi-tags me-1"></i>Tags:</label>
-    <input formControlName="tags" class="form-control" placeholder="Tags" />
+    <input formControlName="servings" class="form-control" placeholder="Servings" type="number" min="1" required
+      [ngClass]="{'is-invalid': recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched}" />
+    <div class="invalid-feedback" *ngIf="recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched">
+      Servings is required and must be at least 1.
+    </div>
   </div>
   <div formArrayName="items" class="mb-3">
     <label class="form-label"><i class="bi bi-list-ul me-1"></i>Ingredients:</label>
     <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row g-2 align-items-end mb-2">
       <div class="col">
-        <input formControlName="name" class="form-control" placeholder="Item Name" required />
+        <input formControlName="name" class="form-control" placeholder="Item Name" required
+          [ngClass]="{'is-invalid': item.get('name')?.invalid && item.get('name')?.touched}" />
       </div>
       <div class="col">
-        <input formControlName="amount" class="form-control" placeholder="Amount" type="number" min="0" required />
+        <input formControlName="amount" class="form-control" placeholder="Amount" type="number" min="0" required
+          [ngClass]="{'is-invalid': item.get('amount')?.invalid && item.get('amount')?.touched}" />
+        <div class="invalid-feedback" *ngIf="item.get('amount')?.invalid && item.get('amount')?.touched">
+          Amount is required and must be greater than 0.
+        </div>
       </div>
       <div class="col">
-        <select formControlName="unit" class="form-select" required>
+        <select formControlName="unit" class="form-select" required
+          [ngClass]="{'is-invalid': item.get('unit')?.invalid && item.get('unit')?.touched}">
           <option value="" disabled>Select Unit</option>
           <option *ngFor="let unit of units" [value]="unit">{{ unit }}</option>
         </select>
+        <div class="invalid-feedback" *ngIf="item.get('unit')?.invalid && item.get('unit')?.touched">
+          Unit is required.
+        </div>
       </div>
       <div class="col-auto">
         <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeItem(i)">
@@ -49,13 +51,59 @@
   </div>
   <div class="mb-3">
     <label class="form-label"><i class="bi bi-list-ol me-1"></i>Instructions:</label>
-    <textarea formControlName="instructions" class="form-control" placeholder="Instructions" required></textarea>
+    <textarea formControlName="instructions" class="form-control" placeholder="Instructions" required
+      [ngClass]="{'is-invalid': recipeForm.get('instructions')?.invalid && recipeForm.get('instructions')?.touched}"></textarea>
+    <div class="invalid-feedback"
+      *ngIf="recipeForm.get('instructions')?.invalid && recipeForm.get('instructions')?.touched">
+      Instructions are required.
+    </div>
   </div>
+
   <div class="mb-3">
-    <label class="form-label"><i class="bi bi-sticky me-1"></i>Additional Notes:</label>
-    <textarea formControlName="notes" class="form-control" placeholder="Additional Notes"></textarea>
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>More Options</mat-panel-title>
+        </mat-expansion-panel-header>
+        <ng-template matExpansionPanelContent>
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-hourglass-split me-1"></i>Prep time:</label>
+            <input formControlName="prepTime" class="form-control" placeholder="Prep Time" type="number" min="0" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-fire me-1"></i>Cook Time:</label>
+            <input formControlName="cookTime" class="form-control" placeholder="Cook Time" type="number" min="0" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-star me-1"></i>Rating:</label>
+            <input formControlName="rating" class="form-control" placeholder="Rating" type="number" min="0" max="5" />
+          </div>
+          <div class="mb-3">
+            <mat-form-field class="w-100">
+              <mat-chip-grid #chipGrid formControlName="tags">
+                @for (tag of tags; track tag) {
+                <mat-chip-row (removed)="removeTag(tag)">
+                  {{tag}}
+                  <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                  </button>
+                </mat-chip-row>
+                }
+                <input placeholder="Add tags" [matChipInputFor]="chipGrid"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="addTag($event)" />
+              </mat-chip-grid>
+            </mat-form-field>
+          </div>
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-sticky me-1"></i>Additional Notes:</label>
+            <textarea formControlName="notes" class="form-control" placeholder="Additional Notes"></textarea>
+          </div>
+        </ng-template>
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
-  <button type="submit" class="btn btn-success w-100">
+
+  <button type="submit" class="btn btn-success w-100 mt-3" [disabled]="recipeForm.invalid">
     <i class="bi bi-save me-1"></i>{{ submitButtonText }}
   </button>
 </form>

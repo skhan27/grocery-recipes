@@ -1,13 +1,10 @@
 import { RedirectCommand, ResolveFn, Router, Routes } from '@angular/router';
 import { RecipeListComponent } from '../components/recipe-list/recipe-list.component';
-import { CreateRecipeComponent } from '../components/create-recipe/create-recipe.component';
-import { RecipeDetailsComponent } from '../components/recipe-details/recipe-details.component';
 import { LoginComponent } from '../components/login/login.component';
 import { RegisterComponent } from '../components/register/register.component';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { map } from 'rxjs';
-import { ShoppingListComponent } from '../components/shopping-list/shopping-list.component';
 import { AccountSettingsComponent } from '../components/account-settings/account-settings.component';
 
 const AuthGuard: ResolveFn<boolean> = () => {
@@ -38,17 +35,20 @@ export const routes: Routes = [
   {
     path: 'create-recipe',
     title: 'Create Recipe',
-    component: CreateRecipeComponent,
+    loadComponent: () =>
+      import('../components/create-recipe/create-recipe.component').then(m => m.CreateRecipeComponent),
     canActivate: [AuthGuard],
   },
   {
     path: 'recipe-details/:recipeId',
-    component: RecipeDetailsComponent,
+    loadComponent: () =>
+      import('../components/recipe-details/recipe-details.component').then(m => m.RecipeDetailsComponent),
     canActivate: [AuthGuard],
   },
   {
     path: 'shopping-list',
-    component: ShoppingListComponent,
+    loadComponent: () =>
+      import('../components/shopping-list/shopping-list.component').then(m => m.ShoppingListComponent),
     canActivate: [AuthGuard],
   },
   {
