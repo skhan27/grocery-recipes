@@ -1,14 +1,16 @@
 @use '@angular/material' as mat;
 @import "./app/variables.scss";
+
+$primary: #f48c06;
 /* Importing Bootstrap SCSS file. */
 @import "bootstrap/scss/bootstrap";
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
 
-@include mat.core();
 
 body {
   background-color: $background-color;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: $primary-font-color;
+
 }
