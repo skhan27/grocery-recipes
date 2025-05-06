@@ -34,7 +34,11 @@
         <input type="checkbox" class="form-check-input me-2" [checked]="ingredient.checked"
           (change)="toggleIngredientChecked(ingredient.name)" />
         <span class="flex-grow-1">
-          {{ ingredient.name }}: {{ ingredient.amount.amount }} {{ ingredient.amount.unit }}
+          {{ ingredient.name }}: @for(amount of ingredient.amount; track $index) {
+          {{ amount.amount }} {{ amount.unit }}
+          @if(!$last)
+          {, }
+          }
         </span>
         <div class="btn-group ms-2" role="group">
           <button class="btn btn-outline-secondary btn-sm" *ngIf="i > 0" (click)="moveIngredientUp(i)" title="Move Up"

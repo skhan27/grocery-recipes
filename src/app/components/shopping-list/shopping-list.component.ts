@@ -134,15 +134,23 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
   }
 
   private combineIngredients(): ShoppingListIngredient[] {
-    const ingredientsMap: { [key: string]: Amount } = {};
+    const ingredientsMap: { [key: string]: Amount[] } = {};
     const selectedRecipes = this.getSelectedRecipes();
     selectedRecipes.forEach((recipe) => {
       recipe.items.forEach((ingredient) => {
         if (ingredientsMap[ingredient.name]) {
           // Combine ingredient amounts
-          ingredientsMap[ingredient.name] = ingredient.amount;
+          const newAmount = ingredient.amount;
+          const existingAmountWithSameUnit = ingredientsMap[ingredient.name].find(
+            (a) => a.unit === newAmount.unit
+          );
+          if (existingAmountWithSameUnit) {
+            existingAmountWithSameUnit.amount = existingAmountWithSameUnit.amount + newAmount.amount;
+          } else {
+            ingredientsMap[ingredient.name].push(newAmount);
+          }
         } else {
-          ingredientsMap[ingredient.name] = { ...ingredient.amount };
+          ingredientsMap[ingredient.name] = [{ ...ingredient.amount }];
         }
       });
     });

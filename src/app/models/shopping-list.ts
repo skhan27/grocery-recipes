@@ -2,7 +2,7 @@ import { Amount } from "./amount";
 
 export interface ShoppingListIngredient {
     name: string;
-    amount: Amount;
+    amount: Amount[];
     checked: boolean;
 }
 
