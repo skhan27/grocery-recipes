@@ -1,0 +1,16 @@
+[build]
+  command = "ng build"
+  publish = "dist/grocery-app"
+  functions = "netlify/functions"
+
+[dev]
+  command = "ng serve"
+  port = 4000
+  targetPort = 4200
+  publish = "dist/grocery-app"
+  autoLaunch = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

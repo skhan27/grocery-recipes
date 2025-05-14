@@ -9,4 +9,5 @@ export const environment = {
     appId: 'PLACEHOLDER_APP_ID',
     measurementId: 'PLACEHOLDER_MEASUREMENT_ID',
   },
+  apiUrl: "/api"
 };
