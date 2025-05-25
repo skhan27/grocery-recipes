@@ -1,5 +1,12 @@
 <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()">
   <div class="mb-3">
+    <button type="button" class="btn btn-outline-primary w-100" (click)="importRecipe()" data-bs-toggle="tooltip"
+      title="TODO: Add smart import tooltip text">
+      <i class="bi bi-stars"></i> Smart Import Recipe
+    </button>
+  </div>
+
+  <div class="mb-3">
     <label class="form-label">Recipe Name: </label>
     <input formControlName="name" class="form-control" placeholder="Recipe Name" required
       [ngClass]="{'is-invalid': recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched}" />
@@ -16,6 +23,7 @@
     </div>
   </div>
   <div formArrayName="items" class="mb-3">
+
     <label class="form-label"><i class="bi bi-list-ul me-1"></i>Ingredients:</label>
     <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="row g-2 align-items-end mb-2">
       <div class="col">

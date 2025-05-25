@@ -24,12 +24,24 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { COMMA, ENTER, SPACE } from '@angular/cdk/keycodes';
+import { MatDialog } from '@angular/material/dialog';
+import { RecipeImportDialogComponent } from '../recipe-import-dialog/recipe-import-dialog.component';
+import { RecipeExtractionResponse } from '../../services/openai-api.service';
 @Component({
   selector: 'app-recipe-form',
   templateUrl: './recipe-form.component.html',
-  imports: [FormsModule, ReactiveFormsModule, NgFor, NgClass, NgIf, MatExpansionModule, MatButtonModule,
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    NgFor,
+    NgClass,
+    NgIf,
+    MatExpansionModule,
+    MatButtonModule,
     MatFormFieldModule,
-    MatChipsModule, MatIconModule,],
+    MatChipsModule,
+    MatIconModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
@@ -42,7 +54,10 @@ export class RecipeFormComponent implements OnInit {
   units = Object.values(Unit);
   tags: string[] = [];
   separatorKeysCodes: number[] = [ENTER, COMMA, SPACE];
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private dialog: MatDialog
+  ) {
     this.recipeForm = this.fb.group({
       name: ['', Validators.required],
       items: this.fb.array([this.createItem()]),
@@ -112,6 +127,35 @@ export class RecipeFormComponent implements OnInit {
     event.chipInput!.clear();
   }
 
+  importRecipe(): void {
+    const dialogRef = this.dialog.open(RecipeImportDialogComponent, {
+      width: '600px',
+    });
+
+    dialogRef.afterClosed().subscribe((recipeResponse: RecipeExtractionResponse) => {
+      if (recipeResponse) {
+        const recipe = recipeResponse.recipe;
+        // Clear existing form
+        while (this.items.length) {
+          this.items.removeAt(0);
+        }
+
+        // Update form with extracted recipe
+        this.recipeForm.patchValue({
+          name: recipe.name,
+          servings: recipe.servings,
+          instructions: recipe.instructions.join('\n'),
+          notes: recipe.notes || '',
+        });
+
+        // Add ingredients
+        recipe.ingredients.forEach((ingredient) => {
+          this.items.push(this.createItem(ingredient));
+        });
+      }
+    });
+  }
+
   onSubmit(): void {
     if (this.recipeForm.valid) {
       const val = this.recipeForm.value;
@@ -130,7 +174,10 @@ export class RecipeFormComponent implements OnInit {
         notes: val.notes,
         rating: val.rating,
         servings: val.servings,
-        tags: (val.tags as string).split(',').map((tag: string) => tag.trim()).flatMap(val => val.split(' ')),
+        tags: (val.tags as string)
+          .split(',')
+          .map((tag: string) => tag.trim())
+          .flatMap((val) => val.split(' ')),
         prepTime: val.prepTime,
         cookTime: val.cookTime,
       };

@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Recipe } from '../../models/recipe';
-import { AsyncPipe, NgClass, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, DecimalPipe, NgClass, NgFor, NgIf } from '@angular/common';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RecipeFormComponent } from '../recipe-form/recipe-form.component';
@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'recipe-details',
   standalone: true,
-  imports: [NgIf, AsyncPipe, NgFor, ReactiveFormsModule, RecipeFormComponent, NgClass],
+  imports: [NgIf, AsyncPipe, NgFor, ReactiveFormsModule, RecipeFormComponent, NgClass, DecimalPipe],
   templateUrl: './recipe-details.component.html',
   styleUrl: './recipe-details.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

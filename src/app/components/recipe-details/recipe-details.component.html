@@ -2,7 +2,13 @@
   <div class="card shadow-sm">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="card-title mb-0"><i class="bi bi-journal-text me-2"></i>{{ recipe.name }}</h1>
+        <div>
+          <h1 class="card-title mb-0"><i class="bi bi-journal-text me-2"></i>{{ recipe.name }}</h1>
+          <p class="text-muted mt-2 mb-0">
+            <i class="bi bi-people me-1"></i>Serves {{ recipe.servings * (scaleControl.value ?? 1) | number:'1.0-1' }}
+            people
+          </p>
+        </div>
         <div>
           <button class="btn btn-outline-secondary me-2" (click)="editMode = !editMode">
             <i class="bi" [ngClass]="editMode ? 'bi-x-circle' : 'bi-pencil-square'"></i>
@@ -30,7 +36,11 @@
           </li>
         </ul>
         <h4><i class="bi bi-list-ol me-1"></i>Instructions</h4>
-        <p class="mb-4">{{ recipe.instructions }}</p>
+        <ol class="list-group list-group-numbered mb-4">
+          <li class="list-group-item" *ngFor="let instruction of recipe.instructions">
+            {{ instruction }}
+          </li>
+        </ol>
         <h4><i class="bi bi-sticky me-1"></i>Notes</h4>
         <p>{{ recipe.notes }}</p>
       </div>

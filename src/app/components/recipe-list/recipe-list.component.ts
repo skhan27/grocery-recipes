@@ -3,7 +3,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { RecipeFirebaseService } from '../../services/recipe.firebase.service';
 import { Recipe } from '../../models/recipe';
-import { OpenAiService } from '../../services/openai-api.service';
 
 @Component({
   selector: 'app-recipe-list',
@@ -17,7 +16,6 @@ export class RecipeListComponent implements OnInit {
     initialValue: [],
   });
 
-  openaiService = inject(OpenAiService);
   filteredRecipes: Signal<Recipe[]>;
   searchValue = signal('');
   router = inject(Router);
@@ -40,10 +38,6 @@ export class RecipeListComponent implements OnInit {
       return this.recipe$().filter((recipe) =>
         recipe.name.toLowerCase().includes(this.searchValue().toLowerCase())
       );
-    });
-
-    this.openaiService.generateCompletion('Hello what is your name').subscribe((response) => {
-      console.log(response);
     });
   }
 
