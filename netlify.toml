@@ -1,6 +1,6 @@
 [build]
   command = "ng build"
-  publish = "dist/grocery-app"
+  publish = "dist/grocery-app/browser"
   functions = "netlify/functions"
 
 [dev]
