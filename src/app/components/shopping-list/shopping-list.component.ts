@@ -28,6 +28,7 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
   combinedIngredients: ShoppingListIngredient[] = [];
   shoppingList: string[] = [];
   isInitialized = signal(false);
+  recipeScales: { [recipeId: string]: number } = {}; // Track scale for each recipe
 
   private shoppingListService = inject(ShoppingListService);
   private destroy$ = new Subject<void>();
@@ -61,7 +62,15 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
       this.selectedRecipes.delete(recipeId);
     } else {
       this.selectedRecipes.add(recipeId);
+      if (!this.recipeScales[recipeId]) {
+        this.recipeScales[recipeId] = 1;
+      }
     }
+  }
+
+  setRecipeScale(recipeId: string, scale: number): void {
+    if (scale < 0.1) {scale = 0.1;}
+    this.recipeScales[recipeId] = scale;
   }
 
   moveIngredientUp(index: number): void {
@@ -107,6 +116,7 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
     }));
     this.shoppingListService.saveShoppingList(selectedRecipeIds, ingredients).pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.combinedIngredients = ingredients;
+      this.recipeScales = {}; // Reset scales after generating the list
       this.showIngredients.set(true);
     });
   }
@@ -129,6 +139,10 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
         this.shoppingList = list.recipes;
         this.selectedRecipes = new Set(this.shoppingList);
         this.combinedIngredients = list.ingredients;
+        // Set default scales for loaded recipes
+        this.shoppingList.forEach(id => {
+          if (!this.recipeScales[id]) this.recipeScales[id] = 1;
+        });
       }
     });
   }
@@ -137,20 +151,22 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
     const ingredientsMap: { [key: string]: Amount[] } = {};
     const selectedRecipes = this.getSelectedRecipes();
     selectedRecipes.forEach((recipe) => {
+      const scale = this.recipeScales[recipe.id] || 1;
       recipe.items.forEach((ingredient) => {
+        // Scale the ingredient amount
+        const scaledAmount = { ...ingredient.amount, amount: ingredient.amount.amount * scale };
         if (ingredientsMap[ingredient.name]) {
           // Combine ingredient amounts
-          const newAmount = ingredient.amount;
           const existingAmountWithSameUnit = ingredientsMap[ingredient.name].find(
-            (a) => a.unit === newAmount.unit
+            (a) => a.unit === scaledAmount.unit
           );
           if (existingAmountWithSameUnit) {
-            existingAmountWithSameUnit.amount = existingAmountWithSameUnit.amount + newAmount.amount;
+            existingAmountWithSameUnit.amount = existingAmountWithSameUnit.amount + scaledAmount.amount;
           } else {
-            ingredientsMap[ingredient.name].push(newAmount);
+            ingredientsMap[ingredient.name].push(scaledAmount);
           }
         } else {
-          ingredientsMap[ingredient.name] = [{ ...ingredient.amount }];
+          ingredientsMap[ingredient.name] = [scaledAmount];
         }
       });
     });

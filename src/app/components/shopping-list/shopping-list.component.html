@@ -6,6 +6,7 @@
           <th scope="col"></th>
           <th scope="col">Recipe Name</th>
           <th scope="col">Times Added</th>
+          <th scope="col">Scale</th>
           <th scope="col">Ingredients</th>
         </tr>
       </thead>
@@ -17,6 +18,11 @@
           </td>
           <td>{{ recipe.name }}</td>
           <td>{{ recipe.numOfTimesAddedToShoppingList || 0 }}</td>
+          <td>
+            <input type="number" min="0.1" step="0.1" class="form-control form-control-sm"
+              [value]="recipeScales[recipe.id] || 1"
+              (input)="setRecipeScale(recipe.id, $any($event.target).valueAsNumber)" style="width: 70px;" />
+          </td>
           <td>
             {{ recipe.items | ingredientList }}
           </td>
