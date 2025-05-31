@@ -122,13 +122,13 @@ export class ShoppingListComponent implements OnDestroy, OnInit {
   private fetchShoppingList(): void {
     this.shoppingListService.getShoppingList().pipe(takeUntil(this.destroy$)).subscribe((list) => {
       this.isInitialized.set(true);
-      if (list.length === 0) {
+      if (!list) {
         this.showIngredients.set(false);
       } else {
         this.showIngredients.set(true);
-        this.shoppingList = list;
+        this.shoppingList = list.recipes;
         this.selectedRecipes = new Set(this.shoppingList);
-        this.combinedIngredients = this.combineIngredients();
+        this.combinedIngredients = list.ingredients;
       }
     });
   }

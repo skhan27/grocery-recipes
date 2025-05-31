@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
-import { Firestore, collection, doc, setDoc, getDoc, deleteDoc } from '@angular/fire/firestore';
+import { Firestore, collection, doc, setDoc, getDoc, deleteDoc, updateDoc } from '@angular/fire/firestore';
 import { Auth } from '@angular/fire/auth';
 import { RecipeFirebaseService } from './recipe.firebase.service';
 import { UserService } from './user.service';
-import { Observable, forkJoin, from, switchMap, take } from 'rxjs';
+import { Observable, forkJoin, from, of, switchMap, take } from 'rxjs';
 import { ShoppingList, ShoppingListIngredient } from '../models/shopping-list';
 
 @Injectable({
@@ -17,7 +17,12 @@ export class ShoppingListService {
 
     private shoppingListCollection = collection(this.firestore, 'shoppingLists');
 
-    getShoppingList(): Observable<string[]> {
+    private shoppingListCache: ShoppingList | null = null;
+
+    getShoppingList(): Observable<ShoppingList | null> {
+        if (this.shoppingListCache) {
+            return of(this.shoppingListCache);
+        }
         return this.userService.user$.pipe(
             take(1),
             switchMap((user) => {
@@ -29,9 +34,12 @@ export class ShoppingListService {
                 return from(getDoc(shoppingListDoc)).pipe(
                     switchMap((docSnap) => {
                         if (docSnap.exists()) {
-                            return [docSnap.data()['recipes'] as string[]];
+                            const data = docSnap.data() as ShoppingList;
+                            this.shoppingListCache = data;
+                            return of(data);
                         } else {
-                            return [[]];
+                            this.shoppingListCache = { recipes: [], ingredients: [] };
+                            return of(null);
                         }
                     })
                 );
@@ -40,6 +48,7 @@ export class ShoppingListService {
     }
 
     clearShoppingList(): Observable<void> {
+        this.shoppingListCache = null;
         return this.userService.user$.pipe(
             take(1),
             switchMap((user) => {
@@ -61,6 +70,8 @@ export class ShoppingListService {
     }
 
     saveShoppingList(recipes: string[], ingredients: ShoppingListIngredient[]): Observable<void[]> {
+        // Update cache
+        this.shoppingListCache = { recipes, ingredients };
         return this.userService.user$.pipe(
             take(1),
             switchMap((user) => {
@@ -86,20 +97,42 @@ export class ShoppingListService {
                 }
                 const householdId = user.householdId || user.uid;
                 const shoppingListDoc = doc(this.shoppingListCollection, householdId);
-                return from(getDoc(shoppingListDoc)).pipe(
-                    switchMap((docSnap) => {
-                        if (docSnap.exists()) {
-                            const shoppingList = docSnap.data() as ShoppingList;
-                            const ingredient = shoppingList.ingredients.find((i) => i.name === ingredientName);
-                            if (ingredient) {
-                                ingredient.checked = checked;
+
+                // Update cache if available
+                if (this.shoppingListCache) {
+                    const ingredient = this.shoppingListCache.ingredients.find((i) => i.name === ingredientName);
+                    if (ingredient) {
+                        ingredient.checked = checked;
+                    }
+                }
+
+                // Use updateDoc to update only the checked field of the ingredient
+                // Firestore doesn't support updating array elements by value, so we need to update the whole array
+                // But we can avoid reading the doc again
+                const updatedIngredients = this.shoppingListCache
+                    ? this.shoppingListCache.ingredients
+                    : undefined;
+
+                if (!updatedIngredients) {
+                    // fallback to old behavior if cache is not available
+                    return from(getDoc(shoppingListDoc)).pipe(
+                        switchMap((docSnap) => {
+                            if (docSnap.exists()) {
+                                const shoppingList = docSnap.data() as ShoppingList;
+                                const ingredient = shoppingList.ingredients.find((i) => i.name === ingredientName);
+                                if (ingredient) {
+                                    ingredient.checked = checked;
+                                }
+                                this.shoppingListCache = shoppingList;
+                                return from(setDoc(shoppingListDoc, shoppingList));
+                            } else {
+                                throw new Error('Shopping list not found');
                             }
-                            return from(setDoc(shoppingListDoc, shoppingList));
-                        } else {
-                            throw new Error('Shopping list not found');
-                        }
-                    })
-                );
+                        })
+                    );
+                }
+
+                return from(updateDoc(shoppingListDoc, { ingredients: updatedIngredients }));
             })
         );
     }
@@ -113,26 +146,15 @@ export class ShoppingListService {
                 }
                 const householdId = user.householdId || user.uid;
                 const shoppingListDoc = doc(this.shoppingListCollection, householdId);
-                return from(getDoc(shoppingListDoc)).pipe(
-                    switchMap((docSnap) => {
-                        if (docSnap.exists()) {
-                            const shoppingList = docSnap.data() as ShoppingList;
-                            this.reorderIngredients(shoppingList.ingredients, orderedShoppingList.ingredients);
-                            return from(setDoc(shoppingListDoc, shoppingList));
-                        } else {
-                            throw new Error('Shopping list not found');
-                        }
-                    })
-                );
+
+                // Update cache if available
+                if (this.shoppingListCache) {
+                    this.shoppingListCache.ingredients = [...orderedShoppingList.ingredients];
+                }
+
+                // No need to read the doc, just update the ingredients array
+                return from(updateDoc(shoppingListDoc, { ingredients: orderedShoppingList.ingredients }));
             })
         );
-    }
-
-    private reorderIngredients(sourceList: ShoppingListIngredient[], targetList: ShoppingListIngredient[]): ShoppingListIngredient[] {
-        const targetOrder = targetList.map((ingredient) => ingredient.name);
-        const reorderedList = sourceList.sort((a, b) => {
-            return targetOrder.indexOf(a.name) - targetOrder.indexOf(b.name);
-        });
-        return reorderedList;
     }
 }

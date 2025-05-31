@@ -25,12 +25,21 @@ export class RecipeFirebaseService {
   userCollection = collection(this.firestore, 'users');
   householdCollection = collection(this.firestore, 'households');
 
+  // --- Caching ---
+  private allRecipesCache: Recipe[] | null = null;
+  private recipeByIdCache: Map<string, Recipe> = new Map();
+
   getRecipeById(id: string): Observable<Recipe> {
+    // Check cache first
+    if (this.recipeByIdCache.has(id)) {
+      return of(this.recipeByIdCache.get(id)!);
+    }
     return from(
-      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => ({
-        ...val.data(),
-        id: val.id,
-      }))
+      getDoc(doc(this.firestore, `recipes/${id}`)).then((val) => {
+        const recipe = { ...val.data(), id: val.id } as Recipe;
+        this.recipeByIdCache.set(id, recipe);
+        return recipe;
+      })
     ) as Observable<Recipe>;
   }
 
@@ -41,15 +50,22 @@ export class RecipeFirebaseService {
         householdId: user?.householdId ?? null,
       }
       const promise = addDoc(this.recipeCollection, { ...recipe, ...userData }).then(
-        (res) => res.id
+        (res) => {
+          // Invalidate caches
+          this.allRecipesCache = null;
+          this.recipeByIdCache.clear();
+          return res.id;
+        }
       );
       return from(promise);
     }))
   }
 
-
-
   public getRecipes(): Observable<Recipe[]> {
+    // Return cache if available
+    if (this.allRecipesCache) {
+      return of(this.allRecipesCache);
+    }
     return this.userService.user$.pipe(
       switchMap((user) => {
         if (!user) {
@@ -68,9 +84,16 @@ export class RecipeFirebaseService {
           );
         }
         return (collectionData(recipesQuery, { idField: 'id' }) as Observable<Recipe[]>).pipe(take(1));
-      }));
+      }),
+      switchMap((recipes) => {
+        this.allRecipesCache = recipes;
+        // Populate id cache as well
+        this.recipeByIdCache.clear();
+        recipes.forEach(r => this.recipeByIdCache.set(r.id, r));
+        return of(recipes);
+      })
+    );
   }
-
 
   //TODO: Update doesnt work due to no doc error for some reason. Also need to test out the update of user data.
   updateRecipe(recipe: Recipe): Observable<void> {
@@ -93,6 +116,10 @@ export class RecipeFirebaseService {
           cookTime: recipe.cookTime,
           createdBy: recipe.createdBy,
           householdId: recipe.householdId,
+        }).then(() => {
+          // Invalidate caches
+          this.allRecipesCache = null;
+          this.recipeByIdCache.delete(recipe.id);
         })
       );
     }));
@@ -101,7 +128,11 @@ export class RecipeFirebaseService {
 
   deleteRecipe(id: string): Observable<void> {
     const docRef = doc(this.firestore, `recipes/${id}`);
-    return from(deleteDoc(docRef));
+    return from(deleteDoc(docRef).then(() => {
+      // Invalidate caches
+      this.allRecipesCache = null;
+      this.recipeByIdCache.delete(id);
+    }));
   }
 
   incrementRecipeUsage(recipeId: string): Promise<void> {
@@ -109,6 +140,9 @@ export class RecipeFirebaseService {
     return getDoc(recipeDoc).then((docSnap) => {
       if (docSnap.exists()) {
         const currentCount = docSnap.data()['numOfTimesAddedToShoppingList'] || 0;
+        // Invalidate caches
+        this.allRecipesCache = null;
+        this.recipeByIdCache.delete(recipeId);
         return updateDoc(recipeDoc, {
           numOfTimesAddedToShoppingList: currentCount + 1,
         });
