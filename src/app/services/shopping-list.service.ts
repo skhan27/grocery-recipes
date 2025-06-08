@@ -19,6 +19,15 @@ export class ShoppingListService {
 
     private shoppingListCache: ShoppingList | null = null;
 
+    constructor() {
+        // Clear cache on logout
+        this.userService.user$.subscribe(user => {
+            if (!user) {
+                this.shoppingListCache = null;
+            }
+        });
+    }
+
     getShoppingList(): Observable<ShoppingList | null> {
         if (this.shoppingListCache) {
             return of(this.shoppingListCache);

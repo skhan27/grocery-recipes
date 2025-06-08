@@ -29,6 +29,16 @@ export class RecipeFirebaseService {
   private allRecipesCache: Recipe[] | null = null;
   private recipeByIdCache: Map<string, Recipe> = new Map();
 
+  constructor() {
+    // Clear caches on logout
+    this.userService.user$.subscribe(user => {
+      if (!user) {
+        this.allRecipesCache = null;
+        this.recipeByIdCache.clear();
+      }
+    });
+  }
+
   getRecipeById(id: string): Observable<Recipe> {
     // Check cache first
     if (this.recipeByIdCache.has(id)) {
