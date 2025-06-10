@@ -11,6 +11,7 @@ import { NgClass, NgIf } from '@angular/common';
 import { of, pipe, Subject, timer } from 'rxjs';
 import { switchMap, catchError, takeWhile, map, concatMap, take, takeUntil, repeat, filter, defaultIfEmpty } from 'rxjs/operators';
 import { UserService } from '../../services/user.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,8 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
     });
+
+    console.log('env', environment);
   }
 
   ngOnDestroy() {
