@@ -10,6 +10,7 @@ const environmentFilePath = path.join(
 const envConfigFile = `
   export const environment = {
     production: true,
+    apiUrl: "/api",
     firebaseConfig: {
       apiKey: '${process.env.FIREBASE_API_KEY}',
       authDomain: '${process.env.FIREBASE_AUTH_DOMAIN}',
